@@ -46,12 +46,13 @@ class Thermo(Thread):
 
     """Thread : Read temperature """
 
-    def __init__(self, device):
+    def __init__(self, label, device):
         Thread.__init__(self)
         self.device = device
         self.temperature = -1
         self.dont_stop = 1
         self.modif = 0
+        self.label = label
         self.valide = 0
 
     def run(self):
