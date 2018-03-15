@@ -33,6 +33,11 @@ class Traceur(Thread):
           if tt[3] == 0 and tt[4] == 0 and tt[5] == 0:
             f.close()
             f=open("LOGS/"+str(dt.date())+".log","a")
+            f.write("\nDate_Time;")
+
+            for el in self.devices_list :
+              f.write(el.label+";")
+            f.write("\n")
 
           f.write(str(dt.date())+"_"+str(dt.time()).split(".")[0]+";") 
           for el in self.devices_list :
