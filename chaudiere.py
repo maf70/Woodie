@@ -34,7 +34,7 @@ class chaudiere(Thread):
         self.t_secu = hw.Thermo("Ts", self.r.sondeTempMot)
 
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
-        self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, self.capteur_moteur2, self.r.vMin,
+        self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, [ self.capteur_moteur, self.capteur_moteur2] , self.r.vMin,
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
 
         self.ecran    = hw.Afficheur( [
