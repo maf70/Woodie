@@ -42,6 +42,17 @@ class Afficheur(Thread):
     def etat( self, s ):
         self.dont_stop = s
 
+class AfficheurUnique():
+
+    """Affichage : affichage d'un seul message"""
+
+    def __init__(self, message):
+        self.lcd = LCD.Adafruit_CharLCD(r.lcd_rs, r.lcd_en, r.lcd_d4, r.lcd_d5, r.lcd_d6, r.lcd_d7,
+                           r.lcd_columns, r.lcd_rows, r.lcd_backlight)
+        self.lcd.set_cursor(4, 0)
+        self.lcd.message(message)
+
+
 class Thermo(Thread):
 
     """Thread : Read temperature """

@@ -21,6 +21,13 @@ class chaudiere(Thread):
 
         self.r = reglages.Params (fichier_param)
 
+        if self.r.etat != "" :
+          # Parse error
+          afficheurU = hw.AfficheurUnique(self.r.etat)
+          # On ne sort pas ...
+          while 1:
+            time.sleep(3)
+
         self.ventilo  = hw.Sortie("V", reglages.r1)
         self.moteur   = hw.Sortie("M", reglages.r2)
         self.inverse  = hw.Sortie("I", reglages.r3)
