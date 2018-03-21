@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <title>Woodie graphs</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+    <head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <style>
+        #example {
+            width: 960px;
+            height: 400px;
+        }
+    </style>
+    <body>
+        <div id='example' ></div>
+    </body>
+    <script>
+        data = document.getElementById('example');
+        data_x = {{ data_x|safe }};
+        data_y = {{ data_y|safe }};
+        Plotly.plot(
+            data,
+            [{
+                x: data_x,
+                y: data_y
+            }]
+        );
+</script>
+</html>
