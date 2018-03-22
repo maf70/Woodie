@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+import ConfigParser
+
+
 ################################
 #  Reglages de fonctionnement
 ################################
@@ -11,28 +14,38 @@ class Params():
     def __init__(self, fichier = "defaut.txt"):
       self.fichier = fichier
 
-      # Temperature demarrage / arret cycle de chauffe
-      self.tStart = 58
-      self.tStop  = 60
+      self.etat = ""
 
-      # Temperature vis securite
-      self.tSecu  = 60
+      config = ConfigParser.ConfigParser()
+      config.read(fichier)
 
-      # Duree d'un cycle en seconde
-      self.dCycle   = 300
-      self.dVentilo = 240
-      self.dMoteur  = 40
+      try :
+        # Temperature demarrage / arret cycle de chauffe
+        self.tStart = config.getint('DEFAULT','tStart')
+        self.tStop  = config.getint('DEFAULT','tStop')
 
-      # Parametres moteur
-      self.cycleMoteur = 1
-      self.vMin        = 2      # impulsion minimum par temps de cycle
-      self.dInverse    = 3      # Duree inversion (s)
-      self.nInverse    = 3      # Nombre max d'inversion
-      self.dDecalage   = 0.2    # Duree avant demarrage, decale les demarrages des differents moteurs
+        # Temperature vis securite
+        self.tSecu  = config.getint('DEFAULT','tSecu')
 
-      # Specifique
-      self.sondeTempEau = "28-0417c1418bff"
-      self.sondeTempMot = "28-0517c1392fff"
+        # Duree d'un cycle en seconde
+        self.dCycle   = config.getint('DEFAULT','dCycle')
+        self.dVentilo = config.getint('DEFAULT','dVentilo')
+        self.dMoteur  = config.getint('DEFAULT','dMoteur')
+
+        # Parametres moteur
+        self.cycleMoteur = config.getint('DEFAULT','cycleMoteur')
+        self.vMin        = config.getint('DEFAULT','vMin')
+        self.dInverse    = config.getint('DEFAULT','dInverse')
+        self.nInverse    = config.getint('DEFAULT','nInverse')
+        self.dDecalage   = config.getfloat('DEFAULT','dDecalage')
+
+        # Specifique
+        self.sondeTempEau = config.get('DEFAULT','sondeTempEau')
+        self.sondeTempMot = config.get('DEFAULT','sondeTempMot')
+
+      except ConfigParser.NoOptionError:
+        self.etat = "E:Config"
+
 
 
 ################################
