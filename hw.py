@@ -78,7 +78,7 @@ class Thermo(Thread):
             self.modif = 1
             self.valide = 1
 
-          except KeyboardInterrupt:
+          except IOError:
             self.valide = 0
 
           time.sleep(3)
