@@ -54,8 +54,9 @@ def get_data(log_file):
             #Test stupid pour s'assurer que la ligne est une ligne de data
             if line[0] == "2":
                 data = line.split(';')
-                data_x.append(data[0])
-                data_y.append(data[6])
+                if len(data) > 6:
+                    data_x.append(data[0])
+                    data_y.append(data[6])
 
     return data_x, data_y
 
@@ -70,4 +71,4 @@ def home():
 
 if __name__ == '__main__':
     configure_logger()
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=8081)
