@@ -1,0 +1,71 @@
+{
+    "tStart": {
+        "label": "Seuil de démarrage du cycle de chauffe",
+        "valeur": 58,
+        "modifiable": true
+    },
+    "tStop": {
+        "label": "Seuil d'arrêt du cycle de chauffe",
+        "valeur": 60,
+        "modifiable": true
+    },
+    "tSecu": {
+        "label": "Temperature de declenchement de sécurité",
+        "valeur": 60,
+        "modifiable": true
+    },
+    "dCycle": {
+        "label": "Dure d'un cycle",
+        "valeur": 300,
+        "modifiable": true
+    },
+    "dVentilo": {
+        "label": "Duree de fonctionnement ventilateur",
+        "valeur": 240,
+        "modifiable": true
+    },
+    "dMoteur": {
+        "label": "Duree de fonctionnement moteur vis",
+        "valeur": 40,
+        "modifiable": true
+    },
+    "cycleMoteur": {
+        "label": "Faire un dernier cycle sans ventilateur ?",
+        "valeur": 0,
+        "modifiable": true
+    },
+    "vMin": {
+        "label": "Nombre minimum d'impulsion minimum par période",
+        "valeur": 2,
+        "modifiable": true
+    },
+    "dInverse": {
+        "label": "Duree de fonctionnement du moteur en inversion",
+        "valeur": 3,
+        "modifiable": true
+    },
+    "nInverse": {
+        "label": " Nombre max d'inversion avant arrêt",
+        "valeur": 3,
+        "modifiable": true
+    },
+    "dDecalage": {
+        "label": "Décalage entre départ ventilo et moteur vis",
+        "valeur": 0.2,
+        "modifiable": true
+    },
+    "sondeTempEau": {
+        "label": "Identifiant sonde température de l'eau",
+        "valeur": "28-0417c1418bff",
+        "modifiable": false
+    },
+    "sondeTempMot": {
+        "label": "Identifiant sonde température de securité",
+        "valeur": "28-0517c1392fff",
+        "modifiable": false
+    }
+}
+
+
+
+

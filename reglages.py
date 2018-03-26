@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import ConfigParser
+import json
 
 
 ################################
@@ -11,40 +11,44 @@ class Params():
 
     """Recuperation / sauvegarde parametres """
 
-    def __init__(self, fichier = "defaut.txt"):
+    def __init__(self, fichier = "defaut.json"):
       self.fichier = fichier
 
       self.etat = ""
 
-      config = ConfigParser.ConfigParser()
-      config.read(fichier)
-
       try :
-        # Temperature demarrage / arret cycle de chauffe
-        self.tStart = config.getint('DEFAULT','tStart')
-        self.tStop  = config.getint('DEFAULT','tStop')
+        conf=json.load(open(fichier))
 
-        # Temperature vis securite
-        self.tSecu  = config.getint('DEFAULT','tSecu')
+      except IOError:
+        self.etat = "E:ConfFile"
 
-        # Duree d'un cycle en seconde
-        self.dCycle   = config.getint('DEFAULT','dCycle')
-        self.dVentilo = config.getint('DEFAULT','dVentilo')
-        self.dMoteur  = config.getint('DEFAULT','dMoteur')
+      else :
+        try :
+          # Temperature demarrage / arret cycle de chauffe
+          self.tStart = conf["tStart"]["valeur"]
+          self.tStop  = conf["tStop"]["valeur"]
 
-        # Parametres moteur
-        self.cycleMoteur = config.getint('DEFAULT','cycleMoteur')
-        self.vMin        = config.getint('DEFAULT','vMin')
-        self.dInverse    = config.getint('DEFAULT','dInverse')
-        self.nInverse    = config.getint('DEFAULT','nInverse')
-        self.dDecalage   = config.getfloat('DEFAULT','dDecalage')
+          # Temperature vis securite
+          self.tSecu  = conf["tSecu"]["valeur"]
 
-        # Specifique
-        self.sondeTempEau = config.get('DEFAULT','sondeTempEau')
-        self.sondeTempMot = config.get('DEFAULT','sondeTempMot')
+          # Duree d'un cycle en seconde
+          self.dCycle   = conf["dCycle"]["valeur"]
+          self.dVentilo = conf["dVentilo"]["valeur"]
+          self.dMoteur  = conf["dMoteur"]["valeur"]
 
-      except ConfigParser.NoOptionError:
-        self.etat = "E:Config"
+          # Parametres moteur
+          self.cycleMoteur = conf["cycleMoteur"]["valeur"]
+          self.vMin        = conf["vMin"]["valeur"]
+          self.dInverse    = conf["dInverse"]["valeur"]
+          self.nInverse    = conf["nInverse"]["valeur"]
+          self.dDecalage   = conf["dDecalage"]["valeur"]
+
+          # Specifique
+          self.sondeTempEau = conf["sondeTempEau"]["valeur"]
+          self.sondeTempMot = conf["sondeTempMot"]["valeur"]
+
+        except KeyError:
+          self.etat = "E:ConfErr"
 
 
 

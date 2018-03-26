@@ -5,7 +5,7 @@ import sys
 import chaudiere as ch
 
 # Creation & demarrage de la chaudiere !
-woodie = ch.chaudiere ( "defaut.txt" )
+woodie = ch.chaudiere ( "config.json" )
 woodie.start()
 
 # On attend ...
