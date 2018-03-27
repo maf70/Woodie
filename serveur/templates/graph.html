@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <title>Graphs Woodie</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <script src={{ url_for('static', filename='plotly-latest.min.js') }}></script>
+    </head>
+    <body>
+        <header>
+            <h1><a href="{{ url_for('index') }}">WOODIE</a></h1>
+        </header>
+        <title>WOODIE</title>
+        <h2>GRAPHS WOODIE</h2>
+        <h3>TEMPERATURE DE L'EAU</h3>
+        <div id='example' ></div>
+    </body>
+    <script>
+        div = document.getElementById('example');
+        data = [{
+            x: {{ data_x|safe }},
+            y: {{ data_y|safe }},
+            type: 'scatter'
+        }];
+        var layout = {
+          xaxis: {
+            title: 'DATE',
+            titlefont: {
+              family: 'Arial, sans-serif',
+              size: 18,
+              color: 'lightgrey'
+            },
+            showticklabels: false,
+            tickangle: 70,
+            tickfont: {
+              family: 'Old Standard TT, serif',
+              size: 11,
+              color: 'black'
+            }
+          },
+          yaxis: {
+            title: 'TEMPERATURE °C',
+            titlefont: {
+              family: 'Arial, sans-serif',
+              size: 18,
+              color: 'lightgrey'
+            },
+            showticklabels: true,
+            tickfont: {
+              family: 'Old Standard TT, serif',
+              size: 14,
+              color: 'black'
+            }
+          }
+        };
+        Plotly.plot(div, data, layout);
+    </script>
+</html>
+

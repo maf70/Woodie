@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <title>Config Woodie</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <script src={{ url_for('static', filename='plotly-latest.min.js') }}></script>
+    </head>
+    <body>
+        <header>
+            <h1><a href="{{ url_for('index') }}">WOODIE</a></h1>
+        </header>
+        <h2>CONFIGURATION DE WOODIE</h2>
+        <form action="{{ url_for('conf') }}" method="post">
+          {% for parameter in conf %}
+            <br>
+            {{ parameter }}: {{ conf[parameter].label }}
+            <br>
+            <input type="text" name="parameter" placeholder="{{ conf[parameter].valeur }}">
+            <br>
+          {% endfor %}
+
+        </form> 
+    </body>
+    <script>
+    </script>
+</html>

@@ -1,59 +1,22 @@
 <!DOCTYPE html>
 <html>
-    <title>Woodie graphs</title>
+    <title>Accueil Woodie</title>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    
     <head>
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     </head>
-    <style>
-        
-    </style>
     <body>
-        <h1>WOODIE GRAPHS</h1>
-        <h2>WOODIE WATER TEMPERATURE</h2>
-        <div id='example' ></div>
+        <header>
+            <h1><a href="{{ url_for('index') }}">WOODIE</a></h1>
+        </header>
+        <h2>ACCUEIL WOODIE</h2>
+        <h3>LISTE DES LOGS DISPONNIBLES</h3>
+        <form action="{{ url_for('graph') }}" method="post">
+          {% for log in logs %}
+            <input type="radio" name="log_radio" value="{{ log }}">{{ log }}<br>
+          {% endfor %}
+          <input type="submit" value="Afficher">
+        </form> 
     </body>
-    <script>
-        div = document.getElementById('example');
-        data = [{
-            x: {{ data_x|safe }},
-            y: {{ data_y|safe }},
-            type: 'scatter'
-        }];
-        var layout = {
-          xaxis: {
-            title: 'DATE',
-            titlefont: {
-              family: 'Arial, sans-serif',
-              size: 18,
-              color: 'lightgrey'
-            },
-            showticklabels: false,
-            tickangle: 70,
-            tickfont: {
-              family: 'Old Standard TT, serif',
-              size: 11,
-              color: 'black'
-            }
-          },
-          yaxis: {
-            title: 'TEMPERATURE °C',
-            titlefont: {
-              family: 'Arial, sans-serif',
-              size: 18,
-              color: 'lightgrey'
-            },
-            showticklabels: true,
-            tickfont: {
-              family: 'Old Standard TT, serif',
-              size: 14,
-              color: 'black'
-            }
-          }
-        };
-        Plotly.plot(div, data, layout);
-    </script>
 </html>
-
