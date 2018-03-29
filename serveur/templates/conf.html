@@ -17,10 +17,14 @@
             <br>
             {{ parameter }}: {{ conf[parameter].label }}
             <br>
-            <input type="text" name="parameter" placeholder="{{ conf[parameter].valeur }}">
+            {% if conf[parameter].modifiable %}
+                <input class="parameter" type="text" name="parameter" required value="{{ conf[parameter].valeur }}">
+            {% else %}
+                <input class="parameter" type="text" name="parameter" required readonly value="{{ conf[parameter].valeur }}">
+            {% endif %}
             <br>
           {% endfor %}
-
+        <input class="send_form" type="submit" value="Modifier">
         </form> 
     </body>
     <script>

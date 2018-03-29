@@ -31,16 +31,18 @@ LOGGER = logging.getLogger(__name__)
 def get_data(log_file):
     with open(log_file, "r") as lines:
         data_x = []
-        data_y = []
+        data_y_1 = []
+        data_y_2 = []
         for line in lines:
             #Test stupid pour s'assurer que la ligne est une ligne de data
             if line[0] == "2":
                 data = line.split(';')
                 if len(data) > 6:
                     data_x.append(data[0])
-                    data_y.append(data[6])
+                    data_y_1.append(data[6])
+                    data_y_2.append(data[1])
 
-    return data_x, data_y
+    return data_x, data_y_1, data_y_2
 
 
 @app.route('/', methods=['GET'])
@@ -57,11 +59,11 @@ def index():
 def graph():
     try:
         log_file = request.form['log_radio']
-        data_x, data_y = get_data(config.woodie_log_directory+log_file)
-        return render_template('graph.html', data_x=data_x, data_y=data_y)
+        data_x, data_y_1, data_y_2 = get_data(config.woodie_log_directory+log_file)
+        return render_template('graph.html', data_x=data_x, data_y_1=data_y_1, data_y_2=data_y_2)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return str(e), 500
+        return redirect(url_for('index'))
 
 
 @app.route('/conf', methods=['GET', 'POST'])
@@ -71,9 +73,9 @@ def conf():
         return render_template('conf.html', conf=conf)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return str(e), 500
+        return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
     configure_logger()
-    app.run(host='0.0.0.0', port=8081)
+    app.run(host='0.0.0.0', port=config.http_port)
