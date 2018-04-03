@@ -1,0 +1,25 @@
+* {
+    box-sizing: border-box;
+}
+
+*:focus {
+    outline: none;
+}
+
+body {
+    font-family: Arial;
+    background-color: #3498DB;
+    padding: 50px;
+}
+
+h1 {
+    font-size: 50px;
+}
+
+.send_form {
+    margin-top: 15px;
+}
+
+.parameter {
+    margin-top: 5px;
+}

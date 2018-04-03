@@ -11,12 +11,13 @@
             <h1><a href="{{ url_for('index') }}">WOODIE</a></h1>
         </header>
         <h2>ACCUEIL WOODIE</h2>
+        <h3><a href="{{ url_for('conf') }}">MODIFIER LA CONFIGURATION DE WOODIE</a></h3>
         <h3>LISTE DES LOGS DISPONNIBLES</h3>
         <form action="{{ url_for('graph') }}" method="post">
           {% for log in logs %}
             <input type="radio" name="log_radio" value="{{ log }}">{{ log }}<br>
           {% endfor %}
-          <input type="submit" value="Afficher">
+          <input class="send_form" type="submit" value="Afficher">
         </form> 
     </body>
 </html>
