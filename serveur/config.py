@@ -1,4 +1,4 @@
-woodie_base_path        = '/home/romain/Documents/workspace/Woodie/'
+woodie_base_path        = '../'
 woodie_log_directory    = woodie_base_path+'LOGS/'
 woodie_config           = woodie_base_path+'config.json'
 log_level               = 'DEBUG'
