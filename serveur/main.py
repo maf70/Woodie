@@ -70,7 +70,7 @@ def index():
         return render_template('index.html', logs=logs)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return str(e), 500
+        return render_template('error.html', error=str(e))
 
 
 @app.route('/graph', methods=['POST'])
@@ -81,7 +81,7 @@ def graph():
         return render_template('graph.html', data_x=data_x, data_y_1=data_y_1, data_y_2=data_y_2)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return redirect(url_for('index'))
+        return render_template('error.html', error=str(e))
 
 
 @app.route('/conf', methods=['GET', 'POST'])
@@ -96,7 +96,6 @@ def conf():
             jsonFile = open(config.woodie_config, "r")
             conf = json.load(jsonFile, object_pairs_hook=OrderedDict)
             jsonFile.close()
-
             for parameter in conf:
                 if conf[parameter]['modifiable']:
                     if isint(request.form[parameter]):
@@ -111,7 +110,7 @@ def conf():
             return redirect(url_for('conf'))
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return redirect(url_for('index'))
+        return render_template('error.html', error=str(e))
 
 if __name__ == '__main__':
     configure_logger()
