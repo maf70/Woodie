@@ -69,12 +69,27 @@ def graph():
 @app.route('/conf', methods=['GET', 'POST'])
 def conf():
     try:
-        conf = json.load(open(config.woodie_config))
-        return render_template('conf.html', conf=conf)
+        if request.method == 'GET':
+            jsonFile = open(config.woodie_config, "r")
+            conf = json.load(jsonFile)
+            jsonFile.close()
+            return render_template('conf.html', conf=conf)
+        else:
+            jsonFile = open(config.woodie_config, "r")
+            conf = json.load(jsonFile)
+            jsonFile.close()
+
+            for parameter in conf:
+                if conf[parameter]['modifiable']:
+                    conf[parameter]['valeur'] = request.form[parameter]
+
+            jsonFile = open(config.woodie_config, "w+")
+            jsonFile.write(json.dumps(conf, ensure_ascii=False, indent=4, sort_keys=True).encode('utf8'))
+            jsonFile.close()
+            return redirect(url_for('conf'))
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
         return redirect(url_for('index'))
-
 
 if __name__ == '__main__':
     configure_logger()

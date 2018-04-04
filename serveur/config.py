@@ -4,6 +4,6 @@ woodie_config           = woodie_base_path+'config.json'
 log_level               = 'DEBUG'
 log_format              = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 log_name                = 'woodie-server.log'
-log_max_size            = 10000
+log_max_size            = 1000000
 log_backup_count        = 5
 http_port               = 8081
