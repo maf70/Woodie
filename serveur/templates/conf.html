@@ -21,16 +21,20 @@
             {% if conf[parameter].modifiable %}
                 <input class="parameter" type="text" name="{{ parameter }}" required value="{{ conf[parameter].valeur }}">
             {% else %}
-                <input class="parameter" type="text" name="{{ parameter }}" required readonly value="{{ conf[parameter].valeur }}">
+                <input class="parameter_ro" type="text" name="{{ parameter }}" required readonly value="{{ conf[parameter].valeur }}">
             {% endif %}
             <br>
           {% endfor %}
         <input class="send_form" type="submit" value="Modifier">
+        <input class="reset_form" type="reset" value="Réinitialiser">
         </form>
     </body>
     <script>
-    $("input").change(function(){
-        $(this).css("background-color","yellow");
+    $(".parameter").change(function(){
+        $(this).addClass('modified');
+    });
+    $( ".reset_form" ).click(function() {
+        $(".parameter").removeClass('modified');
     });
     </script>
 </html>

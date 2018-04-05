@@ -20,6 +20,11 @@ h1 {
     margin-top: 15px;
 }
 
-.parameter {
+.parameter, .parameter_ro {
     margin-top: 5px;
+}
+
+.modified
+{
+    background-color: yellow;
 }
