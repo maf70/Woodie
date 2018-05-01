@@ -8,6 +8,7 @@ from threading import Thread
 import reglages as r
 from reglages import ON as ON
 from reglages import OFF as OFF
+from reglages import PAUSE as PAUSE
 
 
 class controleur(Thread):
@@ -20,12 +21,14 @@ class controleur(Thread):
         self.tCycle = tCycle
         self.tDecale = tDecale
         self.commande = OFF
+        self.duree = 0
         self.dont_stop = 1
         self.arret()
 
     def run(self):
-        while self.dont_stop == 1 :
+        while self.dont_stop > 0 :
           if self.commande == ON :
+            self.marche()
             if self.tDecale > 0 : time.sleep(self.tDecale)
             while self.duree > 0 and self.dont_stop == 1:
               time.sleep(self.tCycle)
@@ -43,6 +46,16 @@ class controleur(Thread):
         self.commande = OFF
         self.duree = 0
         self.arret()
+
+    def pause(self, p):
+      if self.commande != OFF :
+        if p == 1 :
+          self.dont_stop = 2
+          self.commande = PAUSE
+          self.arret()
+        elif self.commande == PAUSE :
+          self.dont_stop = 1
+          self.commande = ON
 
     def marche(self):
         self.sortie.on()
@@ -86,7 +99,7 @@ class controleurMoteur(Thread):
         self.phase = 0
 
     def run(self):
-        while self.dont_stop == 1 :
+        while self.dont_stop > 0 :
           if self.commande == ON :
             for el in self.compteur_list :
               el.raz()
@@ -105,7 +118,6 @@ class controleurMoteur(Thread):
                     blocage = 1
                 if blocage :
                   # Detection d'un blocage
-                  # print "Detection blocage"
                   self.arret()
                   time.sleep(3)
 
@@ -121,7 +133,7 @@ class controleurMoteur(Thread):
                   self.phase = 0
 
             self.arret()
-            self.commande = OFF
+            if self.duree == 0 : self.commande = OFF
           time.sleep(self.tCycle)
 
     # Commandes venant de la chaudiere
@@ -133,6 +145,16 @@ class controleurMoteur(Thread):
         self.commande = OFF
         self.duree = 0
         self.arret()
+
+    def pause(self, p):
+      if self.commande != OFF :
+        if p == 1 :
+          self.dont_stop = 2
+          self.commande = PAUSE
+          self.arret()
+        elif self.commande == PAUSE :
+          self.dont_stop = 1
+          self.commande = ON
 
     def etat( self, s ):
         self.dont_stop = s

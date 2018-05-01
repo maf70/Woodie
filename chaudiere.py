@@ -40,6 +40,9 @@ class chaudiere(Thread):
         self.t_eau = hw.Thermo("Te", self.r.sondeTempEau)
         self.t_secu = hw.Thermo("Ts", self.r.sondeTempMot)
 
+        self.d_secteur = hw.DetectSecteur("Ds", reglages.d1)
+        self.d_secuMeca = hw.DetectSecteur("Dm", reglages.d2)
+
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
         self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, [ self.capteur_moteur, self.capteur_moteur2] , self.r.vMin,
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
@@ -54,7 +57,9 @@ class chaudiere(Thread):
           [ self.capteur_moteur2 , 3, 1, 2 ],
           [ self.t_eau , 6, 1, 3 ],
           [ self.t_secu , 10, 1, 3 ],
-          [ self , 4, 0, 8 ],
+          [ self.d_secteur , 14, 1, 1 ],
+          [ self.d_secuMeca , 15, 1, 1 ],
+          [ self , 4, 0, 9 ],
           ] )
 
         self.trace    = trace.Traceur( [
@@ -67,6 +72,8 @@ class chaudiere(Thread):
           self.capteur_moteur2,
           self.t_eau,
           self.t_secu,
+          self.d_secteur,
+          self.d_secuMeca,
           self ])
 
         self.dont_stop = 1
@@ -82,6 +89,9 @@ class chaudiere(Thread):
 
         self.t_eau.start()
         self.t_secu.start()
+
+        self.d_secteur.start()
+        self.d_secuMeca.start()
 
         self.ctrlVentilo.start()
         self.ctrlMoteur.start()
@@ -105,6 +115,12 @@ class chaudiere(Thread):
               elif self.t_secu.temperature >= self.r.tSecu:
                 self.phase = "E:Secu"
                 self.modif = anomalie = 3
+              elif self.d_secteur.valeur() == 0:
+                self.phase = "E:Secteur"
+                self.modif = anomalie = 4
+              elif self.d_secuMeca.valeur() == 0:
+                self.phase = "E:SecuMec"
+                self.modif = anomalie = 5
               elif anomalie != 0:
                 self.phase = "Reprise"
                 self.modif = 1
@@ -112,10 +128,14 @@ class chaudiere(Thread):
 
               # Si anomalie, on arrete tout :
               if anomalie != 0:
-                self.ctrlVentilo.stoppe()
-                self.ctrlMoteur.stoppe()
+                self.ctrlVentilo.pause(1)
+                self.ctrlMoteur.pause(1)
               # Sinon cycle normal
               else :
+
+                # Si pause alors reprise (sinon pas d'effet)
+                self.ctrlVentilo.pause(0)
+                self.ctrlMoteur.pause(0)
 
                 # Si Repos et temperature seuil bas, redemarrage cycle de chauffe
                 if ventilo_etat == 0 and moteur_etat == 0 and self.t_eau.temperature <= self.r.tStart:
@@ -150,6 +170,8 @@ class chaudiere(Thread):
         self.trace.etat(0)
         self.t_eau.etat(0)
         self.t_secu.etat(0)
+        self.d_secteur.etat(0)
+        self.d_secuMeca.etat(0)
         self.ecran.etat(0)
         self.capteur_moteur.etat(0)
         self.capteur_moteur2.etat(0)
@@ -165,6 +187,9 @@ class chaudiere(Thread):
         self.t_eau.join()
         self.t_secu.join()
         print "Arret capteurs temperature"
+        self.d_secteur.join()
+        self.d_secuMeca.join()
+        print "Arret detecteurs 220 V"
         self.capteur_moteur.join()
         print "Arret capteur moteur 1"
         self.capteur_moteur2.join()

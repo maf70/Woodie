@@ -10,7 +10,7 @@ import reglages as r
 from reglages import ON as ON
 from reglages import OFF as OFF
 
-GPIO.setwarnings(True)
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
 class Afficheur(Thread):
@@ -196,6 +196,48 @@ class Sortie():
         return str(GPIO.input(self.port)^1)
 
 
+class DetectSecteur(Thread):
+
+    """Compteur : this object is a thread which count pulse from optical sensor"""
+
+    def __init__(self, label, port):
+        Thread.__init__(self)
+        self.label = label
+        self.port = port
+        self.rebond = 500
+        self.secteur = 0
+        self.modif = 0
+        GPIO.setup(self.port, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.dont_stop = 1
+
+    def run(self):
+        while self.dont_stop == 1 :
+          time.sleep(1)
+          compteur = 40
+          while compteur > 0 :
+            compteur -= 1
+            if GPIO.input(self.port) == 0 :
+              if self.secteur == 0 :
+                self.modif = 1
+              self.secteur = 1
+              break
+            time.sleep(0.001)
+          if compteur == 0 :
+            self.secteur = 0
+            self.modif = 1
+
+    def etat( self, s ):
+        self.dont_stop = s
+
+    def valeur(self):
+        return self.secteur
+
+    def affiche(self):
+        if self.secteur > 0 : return "1"
+        return "0"
+
+    def log(self):
+        return str(self.secteur)
 
 
 

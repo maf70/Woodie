@@ -58,6 +58,7 @@ class Params():
 
 ON=0
 OFF=1
+PAUSE=2
 
 ################################
 #  Cablage. Non modifiable.
@@ -76,6 +77,12 @@ r4 = 22
 # Board equivalent : 37 18
 b1 = 26
 b2 = 24
+
+# Configuration des gpio pour les detecteurs secteur
+# !! Numerotation Broadcom !!
+# Board equivalent : 21 19
+d1 = 9
+d2 = 10
 
 # Configuration des gpio  du lcd
 # !! Numerotation Broadcom !!
