@@ -13,6 +13,8 @@ import datetime
 from time import time as current_time
 import config
 import os
+from collections import OrderedDict
+
 
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
@@ -44,6 +46,22 @@ def get_data(log_file):
 
     return data_x, data_y_1, data_y_2
 
+def isint(x):
+    try:
+        a = float(x)
+        b = int(a)
+    except ValueError:
+        return False
+    else:
+        return a == b
+
+def isfloat(x):
+    try:
+        a = float(x)
+    except ValueError:
+        return False
+    else:
+        return True
 
 @app.route('/', methods=['GET'])
 def index():
@@ -52,7 +70,7 @@ def index():
         return render_template('index.html', logs=logs)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return str(e), 500
+        return render_template('error.html', error=str(e))
 
 
 @app.route('/graph', methods=['POST'])
@@ -63,18 +81,36 @@ def graph():
         return render_template('graph.html', data_x=data_x, data_y_1=data_y_1, data_y_2=data_y_2)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return redirect(url_for('index'))
+        return render_template('error.html', error=str(e))
 
 
 @app.route('/conf', methods=['GET', 'POST'])
 def conf():
     try:
-        conf = json.load(open(config.woodie_config))
-        return render_template('conf.html', conf=conf)
+        if request.method == 'GET':
+            jsonFile = open(config.woodie_config, "r")
+            conf = json.load(jsonFile, object_pairs_hook=OrderedDict)
+            jsonFile.close()
+            return render_template('conf.html', conf=conf)
+        else:
+            jsonFile = open(config.woodie_config, "r")
+            conf = json.load(jsonFile, object_pairs_hook=OrderedDict)
+            jsonFile.close()
+            for parameter in conf:
+                if conf[parameter]['modifiable']:
+                    if isint(request.form[parameter]):
+                        conf[parameter]['valeur'] = int(request.form[parameter])
+                    elif isfloat(request.form[parameter]):
+                        conf[parameter]['valeur'] = float(request.form[parameter])
+                    else:
+                        conf[parameter]['valeur'] = request.form[parameter]
+            jsonFile = open(config.woodie_config, "w+")
+            jsonFile.write(json.dumps(conf, ensure_ascii=False, indent=4, sort_keys=False).encode('utf8'))
+            jsonFile.close()
+            return redirect(url_for('conf'))
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return redirect(url_for('index'))
-
+        return render_template('error.html', error=str(e))
 
 if __name__ == '__main__':
     configure_logger()
