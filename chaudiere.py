@@ -43,6 +43,8 @@ class chaudiere(Thread):
         self.d_secteur = hw.DetectSecteur("Ds", reglages.d1)
         self.d_secuMeca = hw.DetectSecteur("Dm", reglages.d2)
 
+        self.analog = hw.I2cAnalog("A0", reglages.i2cNano, 3)
+
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
         self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, [ self.capteur_moteur, self.capteur_moteur2] , self.r.vMin,
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
@@ -57,9 +59,10 @@ class chaudiere(Thread):
           [ self.capteur_moteur2 , 3, 1, 2 ],
           [ self.t_eau , 6, 1, 3 ],
           [ self.t_secu , 10, 1, 3 ],
-          [ self.d_secteur , 14, 1, 1 ],
-          [ self.d_secuMeca , 15, 1, 1 ],
+          [ self.d_secteur , 14, 0, 1 ],
+          [ self.d_secuMeca , 15, 0, 1 ],
           [ self , 4, 0, 9 ],
+          [ self.analog , 13, 1, 3 ]
           ] )
 
         self.trace    = trace.Traceur( [
@@ -74,6 +77,7 @@ class chaudiere(Thread):
           self.t_secu,
           self.d_secteur,
           self.d_secuMeca,
+          self.analog,
           self ])
 
         self.dont_stop = 1
@@ -92,6 +96,8 @@ class chaudiere(Thread):
 
         self.d_secteur.start()
         self.d_secuMeca.start()
+
+        self.analog.start()
 
         self.ctrlVentilo.start()
         self.ctrlMoteur.start()
@@ -121,6 +127,9 @@ class chaudiere(Thread):
               elif self.d_secuMeca.valeur() == 0:
                 self.phase = "E:SecuMec"
                 self.modif = anomalie = 5
+              elif self.analog.valide == 0:
+                self.phase = "E:Capt K"
+                self.modif = anomalie = 6
               elif anomalie != 0:
                 self.phase = "Reprise"
                 self.modif = 1
@@ -170,6 +179,7 @@ class chaudiere(Thread):
         self.trace.etat(0)
         self.t_eau.etat(0)
         self.t_secu.etat(0)
+        self.analog.etat(0)
         self.d_secteur.etat(0)
         self.d_secuMeca.etat(0)
         self.ecran.etat(0)
@@ -187,6 +197,8 @@ class chaudiere(Thread):
         self.t_eau.join()
         self.t_secu.join()
         print "Arret capteurs temperature"
+        self.analog.join()
+        print "Arret lecture analogique"
         self.d_secteur.join()
         self.d_secuMeca.join()
         print "Arret detecteurs 220 V"

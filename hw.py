@@ -4,6 +4,7 @@ import sys
 
 import RPi.GPIO as GPIO
 import Adafruit_CharLCD as LCD
+import smbus
 
 from threading import Thread
 import reglages as r
@@ -12,6 +13,9 @@ from reglages import OFF as OFF
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
+
+# Bus i2c
+i2cBus = smbus.SMBus(r.i2cBusNum)
 
 class Afficheur(Thread):
 
@@ -239,11 +243,45 @@ class DetectSecteur(Thread):
     def log(self):
         return str(self.secteur)
 
+class I2cAnalog(Thread):
 
+    """Compteur : this object is a thread which count pulse from optical sensor"""
 
+    def __init__(self, label, address, delai):
+        Thread.__init__(self)
+        self.label = label
+        self.address = address
+        self.delai = delai
+        self.valeur = 0
+        self.modif = 0
+        self.valide = 0
+        self.dont_stop = 1
 
+    def run(self):
+        while self.dont_stop == 1 :
+          valeur = self.valeur
+          time.sleep(self.delai)
+          try :
+            self.valeur = i2cBus.read_byte_data(self.address, 1)
+            self.valide = 1
 
+          except IOError:
+            self.valide = 0
 
+          if valeur != self.valeur :
+            self.modif = 1
+
+    def etat( self, s ):
+        self.dont_stop = s
+
+    def valeur(self):
+        return self.valeur
+
+    def affiche(self):
+        return str(self.valeur)
+
+    def log(self):
+        return str(self.valeur)
 
 
 
