@@ -3,7 +3,6 @@ import time
 import sys
 
 import RPi.GPIO as GPIO
-import Adafruit_CharLCD as LCD
 import smbus
 
 from threading import Thread
@@ -14,46 +13,39 @@ from reglages import OFF as OFF
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
+import RPi_I2C_driver
+
 # Bus i2c
 i2cBus = smbus.SMBus(r.i2cBusNum)
 
-class Afficheur(Thread):
+class Afficheur():
 
-    """Thread affichage : track all devices change and display it when occurs"""
+    """Classe affichage : track all devices change and display it when occurs"""
 
     def __init__(self, devices):
-        Thread.__init__(self)
-        self.lcd = LCD.Adafruit_CharLCD(r.lcd_rs, r.lcd_en, r.lcd_d4, r.lcd_d5, r.lcd_d6, r.lcd_d7,
-                           r.lcd_columns, r.lcd_rows, r.lcd_backlight)
+        self.lcd = RPi_I2C_driver.lcd(i2cBus, r.i2cLCD)
         self.texte = []
         for j in range(r.lcd_rows):
           self.texte.append(r.lcd_columns*[" "])
         self.devices_list = devices
         self.dont_stop = 1
 
-    def run(self):
-        while self.dont_stop == 1 :
+    def go(self):
           for el in self.devices_list :
             if el[0].modif != 0 :
               el[0].modif = 0
-              self.lcd.set_cursor(el[1], el[2])
               ch = el[0].affiche()
               l = el[3] - len(ch)
-              if l >= 0   : self.lcd.message(ch+" "*l)
-              elif l < 0  : self.lcd.message("#"*el[3])
-          time.sleep(0.5)
-
-    def etat( self, s ):
-        self.dont_stop = s
+              if l >= 0   : self.lcd.lcd_display_string_pos(ch+" "*l,el[2]+1,el[1])
+              elif l < 0  : self.lcd.lcd_display_string_pos("#"*el[3],el[2]+1,el[1])
 
 class AfficheurUnique():
 
     """Affichage : affichage d'un seul message"""
 
     def __init__(self, message):
-        self.lcd = LCD.Adafruit_CharLCD(r.lcd_rs, r.lcd_en, r.lcd_d4, r.lcd_d5, r.lcd_d6, r.lcd_d7,
-                           r.lcd_columns, r.lcd_rows, r.lcd_backlight)
-        self.lcd.set_cursor(4, 0)
+        self.lcd = RPi_I2C_driver.lcd(r.i2cBusNum, r.i2cLCD)
+        self.lcd.lcd_display_string_pos(message,4, 0)
         self.lcd.message(message)
 
 
@@ -243,24 +235,19 @@ class DetectSecteur(Thread):
     def log(self):
         return str(self.secteur)
 
-class I2cAnalog(Thread):
+class I2cAnalog():
 
     """Compteur : this object is a thread which count pulse from optical sensor"""
 
-    def __init__(self, label, address, delai):
-        Thread.__init__(self)
+    def __init__(self, label, address):
         self.label = label
         self.address = address
-        self.delai = delai
         self.valeur = 0
         self.modif = 0
         self.valide = 0
-        self.dont_stop = 1
 
-    def run(self):
-        while self.dont_stop == 1 :
+    def go(self):
           valeur = self.valeur
-          time.sleep(self.delai)
           try :
             self.valeur = i2cBus.read_byte_data(self.address, 1)
             self.valide = 1
@@ -271,9 +258,6 @@ class I2cAnalog(Thread):
           if valeur != self.valeur :
             self.modif = 1
 
-    def etat( self, s ):
-        self.dont_stop = s
-
     def valeur(self):
         return self.valeur
 
@@ -283,5 +267,23 @@ class I2cAnalog(Thread):
     def log(self):
         return str(self.valeur)
 
+
+class I2cManager(Thread):
+
+    """Compteur : this object is a thread which count pulse from optical sensor"""
+
+    def __init__(self, devices):
+        Thread.__init__(self)
+        self.devices = devices
+        self.dont_stop = 1
+
+    def run(self):
+        while self.dont_stop == 1 :
+          for el in self.devices :
+            el[0].go()
+            time.sleep(el[1])
+
+    def etat( self, s ):
+        self.dont_stop = s
 
 

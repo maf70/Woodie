@@ -97,6 +97,7 @@ lcd_backlight = 21
 # Bus i2c & addresses
 i2cBusNum = 1
 i2cNano   = 0x08
+i2cLCD    = 0x3f
 
 # 16x2 LCD.
 lcd_columns = 16
