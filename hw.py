@@ -17,6 +17,7 @@ import RPi_I2C_driver
 
 # Bus i2c
 i2cBus = smbus.SMBus(r.i2cBusNum)
+GPIO.cleanup()
 
 class Afficheur():
 
@@ -112,6 +113,8 @@ class Compteur(Thread):
         self.modif = 0
         GPIO.setup(self.port, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
         GPIO.add_event_detect(self.port, GPIO.RISING, callback=self.eCallback, bouncetime=self.rebond) 
+        GPIO.remove_event_detect(self.port)
+        GPIO.add_event_detect(self.port, GPIO.RISING, callback=self.eCallback, bouncetime=self.rebond)
         self.compteur_prec = 0
         self.vitesse = 0
         self.dont_stop = 1
