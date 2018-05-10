@@ -23,12 +23,22 @@ class Afficheur():
 
     """Classe affichage : track all devices change and display it when occurs"""
 
-    def __init__(self, devices):
+    def __init__(self, defaut, devices):
         self.lcd = RPi_I2C_driver.lcd(i2cBus, r.i2cLCD)
         self.devices_list = devices
+        self.defaut_list = defaut
+        self.defaut = 0
         self.dont_stop = 1
 
     def go(self):
+          if self.defaut == 0 :
+            self.lcd.lcd_clear()
+            i = 1
+            for el in self.defaut_list :
+              self.lcd.lcd_display_string_pos(el,i,0)
+              i += 1
+            self.defaut = 1
+
           for el in self.devices_list :
             if el[0].modif != 0 :
               el[0].modif = 0

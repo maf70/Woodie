@@ -99,8 +99,5 @@ i2cBusNum = 1
 i2cNano   = 0x08
 i2cLCD    = 0x3f
 
-# 16x2 LCD.
-lcd_columns = 16
-lcd_rows    = 2
 
 

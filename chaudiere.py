@@ -51,19 +51,19 @@ class chaudiere(Thread):
         self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, [ self.capteur_moteur, self.capteur_moteur2] , self.r.vMin,
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
 
-        self.ecran    = hw.Afficheur( [
+        self.ecran    = hw.Afficheur( [ "", "Eau :", "Ext :", "Moteur :" ], [
           # [ object , colonne , ligne, longueur ],
           [ self.ventilo , 0, 0, 1 ],
           [ self.moteur  , 1, 0, 1 ],
           [ self.inverse , 2, 0, 1 ],
           # [ self.reserve , 3, 0, 1 ],
-          [ self.capteur_moteur , 0, 1, 2 ],
-          [ self.capteur_moteur2 , 3, 1, 2 ],
+          [ self.capteur_moteur , 9, 3, 2 ],
+          [ self.capteur_moteur2 , 12, 3, 2 ],
           [ self.t_eau , 6, 1, 3 ],
-          [ self.t_secu , 10, 1, 3 ],
-          [ self.d_secteur , 14, 0, 1 ],
-          [ self.d_secuMeca , 15, 0, 1 ],
-          [ self , 4, 0, 9 ],
+          [ self.t_secu , 6, 2, 3 ],
+          [ self.d_secteur , 18, 3, 1 ],
+          [ self.d_secuMeca , 19, 3, 1 ],
+          [ self , 4, 0, 12 ],
           [ self.analog , 13, 1, 3 ]
           ] )
 
@@ -132,7 +132,7 @@ class chaudiere(Thread):
 #                self.phase = "E:Capt K"
 #                self.modif = anomalie = 6
               elif self.ctrlMoteur.blocage() != 0 :
-                self.phase = "E:Blocage Vis"
+                self.phase = "E:Blocage"
                 self.modif = anomalie = 7
               elif anomalie != 0:
                 self.phase = "Reprise"
