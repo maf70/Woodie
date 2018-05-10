@@ -104,14 +104,43 @@ class controleurMoteur(Thread):
             for el in self.compteur_list :
               el.raz()
             self.phase = 0
+            nbBlocage = 0
             if self.tDecale > 0 : time.sleep(self.tDecale)
             self.marche()
+            compteur_local = 0
             while self.duree > 0  and self.dont_stop == 1:
               time.sleep(self.tCycle)
-              self.duree -= self.tCycle
-              if self.phase == 0 : self.phase = 1      # on laisse 1 cycle pour que le moteur demarre
-              else :
-                if self.duree < 0 : self.duree = 0
+
+              if self.phase == 0 :        ### Tempo : attend validite des compteurs (1s)
+                self.duree -= self.tCycle
+                compteur_local += self.tCycle
+                if  compteur_local >= 1 :
+                  self.phase = 1
+
+              elif self.phase == 1 :      ### Rotation normale
+                self.duree -= self.tCycle
+                blocage = 0
+                for el in self.compteur_list :
+                  if el.valeur() < self.vMin :
+                    blocage = 1
+                if blocage :
+                  # Detection d'un blocage
+                  nbBlocage += 1
+                  self.arret()
+                  compteur_local = 0
+                  self.phase = 2
+                if nbBlocage >= self.nInverse :
+                  self.phase = 10
+
+              elif self.phase == 2 :      ### Tempo avant inversion
+                compteur_local += self.tCycle
+                if  compteur_local > 2 :
+                  self.inverse()          # Demarrage inverse 1s avant fin tempo
+                if  compteur_local > 3 :
+                  self.phase = 3
+                  compteur_local = 0
+
+              elif self.phase == 3 :      ### Rotation inverse
                 blocage = 0
                 for el in self.compteur_list :
                   if el.valeur() < self.vMin :
@@ -119,24 +148,38 @@ class controleurMoteur(Thread):
                 if blocage :
                   # Detection d'un blocage
                   self.arret()
-                  time.sleep(3)
-
-                  self.inverse()
-                  time.sleep(self.tInverse)
-
+                  compteur_local = 0
+                  self.phase = 4
+                compteur_local += self.tCycle
+                if compteur_local > self.tInverse :
+                  nbBlocage += 1
                   self.arret()
-                  time.sleep(3)
+                  compteur_local = 0
+                  self.phase = 4
+                if nbBlocage >= self.nInverse :
+                  self.phase = 10
 
+              elif self.phase == 4 :      ### Tempo avant reprise
+                compteur_local += self.tCycle
+                if  compteur_local > 3 :
+                  self.phase = 0
+                  compteur_local = 0
                   self.marche()
 
-                  # 1 cycle pour redemarrage moteur
-                  self.phase = 0
+              elif self.phase >= 5 :      ### Blocage general
+                  self.arret()
 
             self.arret()
             if self.duree == 0 : self.commande = OFF
           time.sleep(self.tCycle)
 
     # Commandes venant de la chaudiere
+    def blocage(self):
+        if self.phase == 10 :
+          return 1
+        else :
+          return 0
+
     def demarre(self, duree):
         self.commande = ON
         self.duree = duree
@@ -180,10 +223,12 @@ class controleurMoteur(Thread):
     def log( self ):
         if self.commande == OFF :
           return "0"
+        elif self.phase == 10 :
+          return "B"
         elif self.cmd.valeur() == 1 and self.cmdInverse.valeur() == 0:
           return "1"
         elif self.cmd.valeur() == 0 and self.cmdInverse.valeur() == 0:
-          return "B"
+          return "t"
         elif self.cmd.valeur() == 0 and self.cmdInverse.valeur() == 1:
           return "I"
         else :

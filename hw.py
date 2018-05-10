@@ -117,6 +117,7 @@ class Compteur(Thread):
         GPIO.add_event_detect(self.port, GPIO.RISING, callback=self.eCallback, bouncetime=self.rebond)
         self.compteur_prec = 0
         self.vitesse = 0
+        self.valide = 0
         self.dont_stop = 1
 
     def run(self):
@@ -126,6 +127,7 @@ class Compteur(Thread):
           if self.vitesse == 0 : self.compteur = 0
           self.compteur_prec = self.compteur
           time.sleep(0.5)
+          self.valide += 0.5
 
     def eCallback(self, b):
         if (b==self.port):
@@ -136,6 +138,8 @@ class Compteur(Thread):
 
     def raz(self):
         self.compteur = 0
+        self.compteur_prec = 0
+        self.valide = 0
         self.modif = 1
 
     def etat( self, s ):

@@ -131,6 +131,9 @@ class chaudiere(Thread):
 #              elif self.analog.valide == 0:
 #                self.phase = "E:Capt K"
 #                self.modif = anomalie = 6
+              elif self.ctrlMoteur.blocage() != 0 :
+                self.phase = "E:Blocage Vis"
+                self.modif = anomalie = 7
               elif anomalie != 0:
                 self.phase = "Reprise"
                 self.modif = 1
