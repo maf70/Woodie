@@ -39,6 +39,8 @@ class chaudiere(Thread):
 
         self.t_eau = hw.Thermo("Te", self.r.sondeTempEau)
         self.t_secu = hw.Thermo("Ts", self.r.sondeTempMot)
+        self.dallasManager = hw.DallasManager( [ [self.t_eau, 3 ], [self.t_secu, 3 ] ] )
+
 
         self.d_secteur = hw.DetectSecteur("Ds", reglages.d1)
         self.d_secuMeca = hw.DetectSecteur("Dm", reglages.d2)
@@ -93,9 +95,6 @@ class chaudiere(Thread):
         self.capteur_moteur.start()
         self.capteur_moteur2.start()
 
-        self.t_eau.start()
-        self.t_secu.start()
-
         self.d_secteur.start()
         self.d_secuMeca.start()
 
@@ -103,6 +102,8 @@ class chaudiere(Thread):
         self.ctrlMoteur.start()
 
         self.i2cManager.start()
+        self.dallasManager.start()
+
         self.trace.start()
 
         # Arret par defaut
@@ -177,10 +178,9 @@ class chaudiere(Thread):
 
         # Stoppe les taches
         self.trace.etat(0)
-        self.t_eau.etat(0)
-        self.t_secu.etat(0)
         self.d_secteur.etat(0)
         self.d_secuMeca.etat(0)
+        self.dallasManager.etat(0)
         self.i2cManager.etat(0)
         self.capteur_moteur.etat(0)
         self.capteur_moteur2.etat(0)
@@ -190,13 +190,10 @@ class chaudiere(Thread):
         # Attente fin des taches
         self.trace.join()
         print "Arret logs"
+        self.dallasManager.join()
         self.i2cManager.join()
-        print "Arret I2C manager"
+        print "Arret bus managers"
 
-        self.t_eau.join()
-        self.t_secu.join()
-        print "Arret capteurs temperature"
-        print "Arret lecture analogique"
         self.d_secteur.join()
         self.d_secuMeca.join()
         print "Arret detecteurs 220 V"

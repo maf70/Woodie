@@ -24,9 +24,6 @@ class Afficheur():
 
     def __init__(self, devices):
         self.lcd = RPi_I2C_driver.lcd(i2cBus, r.i2cLCD)
-        self.texte = []
-        for j in range(r.lcd_rows):
-          self.texte.append(r.lcd_columns*[" "])
         self.devices_list = devices
         self.dont_stop = 1
 
@@ -49,21 +46,18 @@ class AfficheurUnique():
         self.lcd.message(message)
 
 
-class Thermo(Thread):
+class Thermo():
 
     """Thread : Read temperature """
 
     def __init__(self, label, device):
-        Thread.__init__(self)
         self.device = device
         self.temperature = -1
-        self.dont_stop = 1
         self.modif = 0
         self.label = label
         self.valide = 0
 
-    def run(self):
-        while self.dont_stop == 1 :
+    def go(self):
           try :
             f=open("/sys/bus/w1/devices/"+self.device+"/w1_slave","r")
             line = f.readline()
@@ -76,12 +70,6 @@ class Thermo(Thread):
 
           except IOError:
             self.valide = 0
-
-          time.sleep(3)
-
-
-    def etat( self, s ):
-        self.dont_stop = s
 
     def valeur(self):
         return self.temperature
@@ -267,10 +255,28 @@ class I2cAnalog():
     def log(self):
         return str(self.valeur)
 
-
 class I2cManager(Thread):
 
-    """Compteur : this object is a thread which count pulse from optical sensor"""
+    """Thread : Give the go for each i2c device to access the bus"""
+
+    def __init__(self, devices):
+        Thread.__init__(self)
+        self.devices = devices
+        self.dont_stop = 1
+
+    def run(self):
+        while self.dont_stop == 1 :
+          for el in self.devices :
+            el[0].go()
+            time.sleep(el[1])
+
+    def etat( self, s ):
+        self.dont_stop = s
+
+
+class DallasManager(Thread):
+
+    """Thread : Give the go for each Dallas device to access the bus"""
 
     def __init__(self, devices):
         Thread.__init__(self)
