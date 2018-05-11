@@ -67,32 +67,32 @@ PAUSE=2
 # Configuration des gpio pour la commande des relais
 # !! Numerotation Broadcom !!
 # Board equivalent : 12 11 13 15
-r1 = 18
-r2 = 17
-r3 = 27
-r4 = 22
+r1 = 25
+r2 = 24
+r3 = 23
+r4 = 18
 
 # Configuration des gpio pour les compteurs
 # !! Numerotation Broadcom !!
 # Board equivalent : 37 18
-b1 = 26
-b2 = 24
+b1 = 20
+b2 = 21
 
 # Configuration des gpio pour les detecteurs secteur
 # !! Numerotation Broadcom !!
 # Board equivalent : 21 19
-d1 = 9
-d2 = 10
+d1 = 16
+d2 = 12
 
 # Configuration des gpio  du lcd
 # !! Numerotation Broadcom !!
-lcd_rs        = 20
-lcd_en        = 16
-lcd_d4        = 19
-lcd_d5        = 13
-lcd_d6        = 12
-lcd_d7        = 5
-lcd_backlight = 21
+#lcd_rs        = 20
+#lcd_en        = 16
+#lcd_d4        = 19
+#lcd_d5        = 13
+#lcd_d6        = 12
+#lcd_d7        = 5
+#lcd_backlight = 21
 
 # Bus i2c & addresses
 i2cBusNum = 1
