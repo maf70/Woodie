@@ -122,12 +122,10 @@ class Compteur(Thread):
         self.compteur = 0
         self.modif = 0
         GPIO.setup(self.port, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
-        GPIO.add_event_detect(self.port, GPIO.RISING, callback=self.eCallback, bouncetime=self.rebond) 
-        GPIO.remove_event_detect(self.port)
-        GPIO.add_event_detect(self.port, GPIO.RISING, callback=self.eCallback, bouncetime=self.rebond)
         self.compteur_prec = 0
         self.vitesse = 0
         self.valide = 0
+        self.on()
         self.dont_stop = 1
 
     def run(self):
@@ -142,6 +140,18 @@ class Compteur(Thread):
     def eCallback(self, b):
         if (b==self.port):
           self.compteur += 1
+
+    def on(self):
+        GPIO.remove_event_detect(self.port)
+        GPIO.add_event_detect(self.port, GPIO.RISING, callback=self.eCallback, bouncetime=self.rebond) 
+        GPIO.remove_event_detect(self.port)
+        GPIO.add_event_detect(self.port, GPIO.RISING, callback=self.eCallback, bouncetime=self.rebond)
+        self.compteur_prec = 0
+        self.vitesse = 0
+        self.valide = 0
+
+    def off(self):
+        GPIO.remove_event_detect(self.port)
 
     def tourne(self):
         return self.compteur - self.compteur_prec

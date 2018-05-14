@@ -207,14 +207,20 @@ class controleurMoteur(Thread):
         # On met toujours toutes les sorties a OFF avant de commuter la derniere
         self.cmdInverse.off()
         self.cmd.on()
+#        for el in self.compteur_list :
+#          el.on()
 
     def arret(self):
+#        for el in self.compteur_list :
+#          el.off()
         self.cmd.off()
         self.cmdInverse.off()
 
     def inverse(self):
         self.cmd.off()
         self.cmdInverse.on()
+#        for el in self.compteur_list :
+#          el.on()
 
     # Affichage et log
     def affiche( self ):
