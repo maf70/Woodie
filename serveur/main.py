@@ -35,16 +35,20 @@ def get_data(log_file):
         data_x = []
         data_y_1 = []
         data_y_2 = []
+        data_y_3 = []
+        data_y_4 = []
         for line in lines:
-            #Test stupid pour s'assurer que la ligne est une ligne de data
+            #Test stupide pour s'assurer que la ligne est une ligne de data
             if line[0] == "2":
                 data = line.split(';')
                 if len(data) > 6:
                     data_x.append(data[0])
                     data_y_1.append(data[6])
                     data_y_2.append(data[1])
+                    data_y_3.append(int(data[2])+1.2)
+                    data_y_4.append(int(data[3])+2.4)
 
-    return data_x, data_y_1, data_y_2
+    return data_x, data_y_1, data_y_2, data_y_3, data_y_4
 
 def isint(x):
     try:
@@ -67,6 +71,7 @@ def isfloat(x):
 def index():
     try:
         logs = os.listdir(config.woodie_log_directory)
+        logs.sort(reverse=True)
         return render_template('index.html', logs=logs)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
@@ -77,8 +82,8 @@ def index():
 def graph():
     try:
         log_file = request.form['log_radio']
-        data_x, data_y_1, data_y_2 = get_data(config.woodie_log_directory+log_file)
-        return render_template('graph.html', data_x=data_x, data_y_1=data_y_1, data_y_2=data_y_2)
+        data_x, data_y_1, data_y_2, data_y_3, data_y_4 = get_data(config.woodie_log_directory+log_file)
+        return render_template('graph.html', data_x=data_x, data_y_1=data_y_1, data_y_2=data_y_2, data_y_3=data_y_3, data_y_4=data_y_4)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
         return render_template('error.html', error=str(e))

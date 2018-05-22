@@ -21,17 +21,48 @@
             {
                 x: {{ data_x|safe }},
                 y: {{ data_y_1|safe }},
-                name: 'TEMPERATURE',
+                name: 'Temperature',
                 yaxis: 'y1',
-                type: 'scatter'
+                offset: '100',
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
+
             },
             {
                 x: {{ data_x|safe }},
                 y: {{ data_y_2|safe }},
-                name: 'RELAI',
+                name: 'Ventilateur',
                 yaxis: 'y2',
-                type: 'scatter'
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
+            },
+            {
+                x: {{ data_x|safe }},
+                y: {{ data_y_3|safe }},
+                name: 'Moteur',
+                yaxis: 'y2',
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
+
+            },
+            {
+                x: {{ data_x|safe }},
+                y: {{ data_y_4|safe }},
+                name: 'Inversion moteur',
+                yaxis: 'y2',
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
+
             }
+
         ];
         var layout = {
             xaxis: {
@@ -50,7 +81,7 @@
                 }
             },
             yaxis: {
-                title: 'TEMPERATURE',
+                title: 'TEMPERATURES',
                 titlefont: {
                     family: 'Arial, sans-serif',
                     size: 18,
@@ -64,7 +95,7 @@
                 }
             },
             yaxis2: {
-                title: 'RELAI',
+                title: 'RELAIS',
                 side: 'right',
                 overlaying: 'y',
                 titlefont: {
