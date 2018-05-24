@@ -206,6 +206,22 @@ class Sortie():
     def log(self):
         return str(GPIO.input(self.port)^1)
 
+class Led():
+
+    """Manage a GPIO to pilot a led. Active state is 0 """
+
+
+    def __init__(self, port):
+        self.port = port
+        GPIO.setup(self.port, GPIO.OUT)
+        GPIO.output(self.port,0)
+
+    def on(self):
+        GPIO.output(self.port,1)
+
+    def off(self):
+        GPIO.output(self.port,0)
+
 
 class DetectSecteur(Thread):
 
