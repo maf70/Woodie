@@ -100,9 +100,14 @@ class Entree():
         self.port = port
         self.rebond = rebond
         GPIO.setup(self.port, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.modif = 0
+        self.prec  = 0
 
     def valeur(self):
-        return GPIO.input(self.port)^1
+        val = GPIO.input(self.port)^1
+        if val != self.prec : self.modif = 1
+        self.prec = val
+        return val
 
     def affiche(self):
         return str(GPIO.input(self.port)^1)
