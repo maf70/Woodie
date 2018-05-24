@@ -67,6 +67,8 @@ class chaudiere(Thread):
           [ self.analog , 13, 1, 3 ]
           ] )
 
+        self.ledError = hw.Led(reglages.l1)
+
         self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ], [self.analog, 0 ] ] )
 
         self.trace    = trace.Traceur( [
@@ -138,11 +140,13 @@ class chaudiere(Thread):
                 self.phase = "Reprise"
                 self.modif = 1
                 anomalie = 0
+                self.ledError.off()
 
               # Si anomalie, on arrete tout :
               if anomalie != 0:
                 self.ctrlVentilo.pause(1)
                 self.ctrlMoteur.pause(1)
+                self.ledError.on()
               # Sinon cycle normal
               else :
 
@@ -178,6 +182,8 @@ class chaudiere(Thread):
                   t=0
 
               time.sleep(1)
+
+        self.ledError.off()
 
         # Stoppe les taches
         self.trace.etat(0)

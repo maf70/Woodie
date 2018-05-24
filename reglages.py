@@ -84,6 +84,10 @@ b2 = 21
 d1 = 16
 d2 = 12
 
+# Configuration gpio led
+# !! Numerotation Broadcom !!
+l1 = 26
+
 # Configuration des gpio  du lcd
 # !! Numerotation Broadcom !!
 #lcd_rs        = 20
