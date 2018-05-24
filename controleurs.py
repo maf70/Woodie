@@ -147,12 +147,12 @@ class controleurMoteur(Thread):
                     blocage = 1
                 if blocage :
                   # Detection d'un blocage
+                  nbBlocage += 1
                   self.arret()
                   compteur_local = 0
                   self.phase = 4
                 compteur_local += self.tCycle
                 if compteur_local > self.tInverse :
-                  nbBlocage += 1
                   self.arret()
                   compteur_local = 0
                   self.phase = 4
