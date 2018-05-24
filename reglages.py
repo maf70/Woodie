@@ -88,6 +88,10 @@ d2 = 12
 # !! Numerotation Broadcom !!
 l1 = 26
 
+# Configuration gpio poussoir
+# !! Numerotation Broadcom !!
+p1 = 8
+
 # Configuration des gpio  du lcd
 # !! Numerotation Broadcom !!
 #lcd_rs        = 20

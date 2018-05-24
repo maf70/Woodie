@@ -51,6 +51,9 @@ class chaudiere(Thread):
         self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, [ self.capteur_moteur2] , self.r.vMin,
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
 
+        self.ledError = hw.Led(reglages.l1)
+        self.poussoirReprise = hw.Entree("Pr",reglages.p1,200)
+
         self.ecran    = hw.Afficheur( [ "", "Eau :", "Ext :", "Moteur :" ], [
           # [ object , colonne , ligne, longueur ],
           [ self.ventilo , 0, 0, 1 ],
@@ -63,11 +66,10 @@ class chaudiere(Thread):
           [ self.t_secu , 6, 2, 3 ],
           [ self.d_secteur , 18, 3, 1 ],
           [ self.d_secuMeca , 19, 3, 1 ],
+          [ self.poussoirReprise, 16, 3,1 ],
           [ self , 4, 0, 12 ],
           [ self.analog , 13, 1, 3 ]
           ] )
-
-        self.ledError = hw.Led(reglages.l1)
 
         self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ], [self.analog, 0 ] ] )
 
@@ -77,6 +79,7 @@ class chaudiere(Thread):
           self.moteur,
           self.inverse,
           # self.reserve,
+          self.poussoirReprise,
 #          self.capteur_moteur,
           self.capteur_moteur2,
           self.t_eau,
@@ -133,7 +136,7 @@ class chaudiere(Thread):
 #              elif self.analog.valide == 0:
 #                self.phase = "E:Capt K"
 #                self.modif = anomalie = 6
-              elif self.ctrlMoteur.blocage() != 0 :
+              elif self.ctrlMoteur.estBloque() != 0 :
                 self.phase = "E:Blocage"
                 self.modif = anomalie = 7
               elif anomalie != 0:
@@ -142,11 +145,23 @@ class chaudiere(Thread):
                 anomalie = 0
                 self.ledError.off()
 
+              # Lecture etat poussoir(s)
+              poussoirReprise = self.poussoirReprise.valeur()
+
               # Si anomalie, on arrete tout :
               if anomalie != 0:
                 self.ctrlVentilo.pause(1)
                 self.ctrlMoteur.pause(1)
                 self.ledError.on()
+
+                if anomalie == 7 and poussoirReprise == 1 :
+                  # Deblocage moteur
+                  self.ctrlMoteur.debloque()
+
+                  # Fin de cycle et tentative reprise
+                  anomalie == 0
+                  t = self.r.dCycle
+
               # Sinon cycle normal
               else :
 

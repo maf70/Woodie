@@ -92,6 +92,7 @@ class controleurMoteur(Thread):
         self.tDecale = tDecale
         self.commande = OFF
         self.duree = 0
+        self.blocage = 0
         self.arret()
 
         self.dont_stop = 1
@@ -100,7 +101,7 @@ class controleurMoteur(Thread):
 
     def run(self):
         while self.dont_stop > 0 :
-          if self.commande == ON :
+          if self.commande == ON and self.blocage == 0:
             for el in self.compteur_list :
               el.raz()
             self.phase = 0
@@ -168,17 +169,19 @@ class controleurMoteur(Thread):
 
               elif self.phase >= 5 :      ### Blocage general
                   self.arret()
+                  self.blocage = 1
+                  self.duree = 0
 
             self.arret()
             if self.duree == 0 : self.commande = OFF
           time.sleep(self.tCycle)
 
     # Commandes venant de la chaudiere
-    def blocage(self):
-        if self.phase == 10 :
-          return 1
-        else :
-          return 0
+    def estBloque(self):
+        return self.blocage
+
+    def debloque(self):
+        self.blocage = 0
 
     def demarre(self, duree):
         self.commande = ON
