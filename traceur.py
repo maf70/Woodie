@@ -43,7 +43,7 @@ class Traceur(Thread):
               f.write(el.label+";")
             f.write("\n")
 
-          f.write(str(dt.date())+"_"+str(dt.time()).split(".")[0]+";") 
+          f.write(str(dt.time()).split(".")[0]+";")
           for el in self.devices_list :
             f.write(el.log()+";")
           f.write("\n")
