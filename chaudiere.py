@@ -34,7 +34,7 @@ class chaudiere(Thread):
 # pas utilise, force la sortie a OFF
         self.reserve  = hw.Sortie(" ", reglages.r4)
 
-#        self.capteur_moteur  = hw.Compteur("C1", reglages.b1, 10)
+        self.capteur_moteur  = hw.Compteur("C1", reglages.b1, 10)
         self.capteur_moteur2 = hw.Compteur("C2", reglages.b2, 10)
 
         self.t_eau = hw.Thermo("Te", self.r.sondeTempEau)
@@ -60,7 +60,7 @@ class chaudiere(Thread):
           [ self.moteur  , 1, 0, 1 ],
           [ self.inverse , 2, 0, 1 ],
           # [ self.reserve , 3, 0, 1 ],
-#          [ self.capteur_moteur , 9, 3, 2 ],
+          [ self.capteur_moteur , 9, 3, 2 ],
           [ self.capteur_moteur2 , 12, 3, 2 ],
           [ self.t_eau , 6, 1, 3 ],
           [ self.t_secu , 6, 2, 3 ],
@@ -80,7 +80,7 @@ class chaudiere(Thread):
           self.inverse,
           # self.reserve,
           self.poussoirReprise,
-#          self.capteur_moteur,
+          self.capteur_moteur,
           self.capteur_moteur2,
           self.t_eau,
           self.t_secu,
@@ -97,7 +97,7 @@ class chaudiere(Thread):
     def run(self):
 
         # Start all
-#        self.capteur_moteur.start()
+        self.capteur_moteur.start()
         self.capteur_moteur2.start()
 
         self.d_secteur.start()
@@ -206,7 +206,7 @@ class chaudiere(Thread):
         self.d_secuMeca.etat(0)
         self.dallasManager.etat(0)
         self.i2cManager.etat(0)
-#        self.capteur_moteur.etat(0)
+        self.capteur_moteur.etat(0)
         self.capteur_moteur2.etat(0)
         self.ctrlVentilo.etat(0)
         self.ctrlMoteur.etat(0)
