@@ -14,6 +14,8 @@ class Traceur(Thread):
         Thread.__init__(self)
         self.devices_list = devices
         self.dont_stop = 1
+        self.active = 1
+        self.activeReq = 1
 
     def run(self):
 
@@ -27,6 +29,8 @@ class Traceur(Thread):
         f.write("\n")
 
         while self.dont_stop == 1 :
+         if self.active == 1 or self.activeReq == 1:
+          self.active = self.activeReq
           dt = datetime.now()
           tt=dt.timetuple()
           # Changement de fichier ?
@@ -43,9 +47,15 @@ class Traceur(Thread):
           for el in self.devices_list :
             f.write(el.log()+";")
           f.write("\n")
-          time.sleep(1)
+         time.sleep(1)
 
         f.close()
+
+    def off( self ):
+        self.activeReq = 0
+
+    def on( self ):
+        self.activeReq = 1
 
     def etat( self, s ):
         self.dont_stop = s

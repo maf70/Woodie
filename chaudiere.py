@@ -130,6 +130,7 @@ class chaudiere(Thread):
               elif self.d_secteur.valeur() == 0:
                 self.phase = "E:Secteur"
                 self.modif = anomalie = 4
+                self.trace.off()
               elif self.d_secuMeca.valeur() == 0:
                 self.phase = "E:SecuMec"
                 self.modif = anomalie = 5
@@ -144,6 +145,7 @@ class chaudiere(Thread):
                 self.modif = 1
                 anomalie = 0
                 self.ledError.off()
+                self.trace.on()
 
               # Lecture etat poussoir(s)
               poussoirReprise = self.poussoirReprise.valeur()
