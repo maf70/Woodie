@@ -72,6 +72,12 @@ r2 = 24
 r3 = 23
 r4 = 18
 
+# Software SPI configuration.
+# !! Numerotation Broadcom !!
+SpiCLK = 10     # r8
+SpiCS  =  9     # r7
+SpiDO  = 11     # r6
+
 # Configuration des gpio pour les compteurs
 # !! Numerotation Broadcom !!
 # Board equivalent : 37 18

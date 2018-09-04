@@ -5,6 +5,8 @@ import sys
 import RPi.GPIO as GPIO
 import smbus
 
+import Adafruit_MAX31855.MAX31855 as MAX31855
+
 from threading import Thread
 import reglages as r
 from reglages import ON as ON
@@ -270,6 +272,50 @@ class DetectSecteur(Thread):
 
     def log(self):
         return str(self.secteur)
+
+class SpiSondeK(Thread):
+
+    """Compteur : this object is a thread which access thermocouple sensor via software SPI"""
+
+    def __init__(self, label, CLK, CS, DO):
+        Thread.__init__(self)
+        self.label = label
+        self.CLK = CLK
+        self.CS = CS
+        self.DO = DO
+        self.valeur = 0
+        self.modif = 0
+        self.valide = 0
+        self.dont_stop = 1
+        self.sensor = MAX31855.MAX31855(self.CLK, self.CS, self.DO)
+
+    def run(self):
+        while self.dont_stop == 1 :
+          valeur = self.valeur
+          try :
+            self.valeur = int(self.sensor.readTempC())
+            self.valide = 1
+
+          except IOError:
+            self.valide = 0
+
+          if valeur != self.valeur :
+            self.modif = 1
+
+          time.sleep(1)
+
+    def valeur(self):
+        return self.valeur
+
+    def affiche(self):
+        return str(self.valeur)
+
+    def log(self):
+        return str(self.valeur)
+
+    def etat( self, s ):
+        self.dont_stop = s
+
 
 class I2cAnalog():
 

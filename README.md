@@ -8,6 +8,7 @@ La chaudiere est composée de :
 - un moteur entrainant un ventilateur pour activer la combustion
 - un capteur de temperature (DS18B20) de l'eau en sortie de chaudiere
 - un capteur de temperature (DS18B20) de sécurité
+- un thermocouple (sonde K) pour mesurer la temperature du foyer (non exploite pour l'instant)
 
 Fonctionnement de la chaudiere:
 - En debut de cycle (durée 5 minutes), la vis et le ventilateur sont actionnés
@@ -21,16 +22,17 @@ Fonctionnement de la chaudiere:
 - Verification que le moteur tourne en sens inverse
 - Gestion de la detection en cas de coupure secteur
 - Gestion de la detection de la securité mécanique
-- Gestion d'un thermocouple pour mesurer la temperature du foyer (non exploite pour l'instant)
 - Ces parametres sont charges depuis un fichier (defaut.txt)
 - Un serveur http donne l'acces a l'historique du fonctionnement (a parametrer), et le réglages des parametres.
 
 Le controleur de la chaudiere est composé :
 - D'un pi zero
 - D'une carte 4 relais
-- D'un LCD (HD44780 16x2) affichant (pour l'instant) l'etat des capteurs, relais et chaudiere
-- D'un arduino Nano comme convertisseur analogique/numerique accessible par i2c
-- De 2 modules pour detectetion de la presence du 220V
+- D'un LCD (HD44780 20x4 i2c 0x3F) affichant (pour l'instant) l'etat des capteurs, relais et chaudiere
+- D'un module RTC DS1307 (i2c 0x68)
+- De 2 modules pour detection de la presence du 220V
+- D'un module MAX31855K pour gerer la sonde K, acces via SPI software
+- D'un slot arduino Nano (precedement utilise comme convertisseur analogique/numerique accessible par i2c 0x08) + ampli op LM358
 
 Pour les tests, un banc de test remplace la chaudiere :
 - structure à base de jouet "Knex"
@@ -43,8 +45,10 @@ Pour les tests, un banc de test remplace la chaudiere :
 Le logiciel est écrit en python2 et utilise notament :
 GPIO : https://github.com/adafruit/Adafruit_Python_GPIO
 I2C  : https://gist.github.com/DenisFromHR/cc863375a6e19dce359d
+SPI/MAX31855K  : https://github.com/adafruit/Adafruit_Python_MAX31855.git
 
 Reste à faire:
+- Exploiter Sonde K pour arreter la chaudiere si une anomalie de temperature est detectee dans le foyer
 - parametre si dernier cycle de plaquettes sans ventilateur lorsque le seuil temperature haut est atteint (en commentaire actuellement)
 
 

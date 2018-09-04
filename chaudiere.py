@@ -45,7 +45,8 @@ class chaudiere(Thread):
         self.d_secteur = hw.DetectSecteur("Ds", reglages.d1)
         self.d_secuMeca = hw.DetectSecteur("Dm", reglages.d2)
 
-        self.analog = hw.I2cAnalog("A0", reglages.i2cNano)
+#        self.analog = hw.I2cAnalog("A0", reglages.i2cNano)
+        self.sondeK = hw.SpiSondeK("K", reglages.SpiCLK, reglages.SpiCS, reglages.SpiDO)
 
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
         self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, [ self.capteur_moteur2] , self.r.vMin,
@@ -68,10 +69,10 @@ class chaudiere(Thread):
           [ self.d_secuMeca , 19, 3, 1 ],
           [ self.poussoirReprise, 16, 3,1 ],
           [ self , 4, 0, 12 ],
-          [ self.analog , 13, 1, 3 ]
+          [ self.sondeK , 13, 1, 4 ]
           ] )
 
-        self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ], [self.analog, 0 ] ] )
+        self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ] ] )
 
         self.trace    = trace.Traceur( [
           # [ object ],
@@ -86,7 +87,7 @@ class chaudiere(Thread):
           self.t_secu,
           self.d_secteur,
           self.d_secuMeca,
-          self.analog,
+          self.sondeK,
           self ])
 
         self.dont_stop = 1
@@ -108,6 +109,8 @@ class chaudiere(Thread):
 
         self.i2cManager.start()
         self.dallasManager.start()
+
+        self.sondeK.start()
 
         self.trace.start()
 
@@ -208,6 +211,7 @@ class chaudiere(Thread):
         self.d_secuMeca.etat(0)
         self.dallasManager.etat(0)
         self.i2cManager.etat(0)
+        self.sondeK.etat(0)
         self.capteur_moteur.etat(0)
         self.capteur_moteur2.etat(0)
         self.ctrlVentilo.etat(0)
@@ -218,6 +222,7 @@ class chaudiere(Thread):
         print "Arret logs"
         self.dallasManager.join()
         self.i2cManager.join()
+        self.sondeK.join()
         print "Arret bus managers"
 
         self.d_secteur.join()

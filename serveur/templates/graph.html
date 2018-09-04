@@ -13,7 +13,7 @@
         </header>
         <title>WOODIE</title>
         <h2>GRAPHS WOODIE</h2>
-        <h3>TEMPERATURE & ACTIVATION RELAIS</h3>
+        <h3>TEMPERATURE & RELAIS</h3>
         <div id='Fonctionnement' ></div>
         <h3>CAPTEURS ROTATION & SONDE K</h3>
         <div id='Analyse' ></div>
@@ -104,7 +104,8 @@
                     family: 'Old Standard TT, serif',
                     size: 14,
                     color: 'black'
-                }
+                },
+                rangemode: 'tozero'
             },
             yaxis2: {
                 title: 'RELAIS',
@@ -120,7 +121,9 @@
                     family: 'Old Standard TT, serif',
                     size: 14,
                     color: 'black'
-                }
+                },
+                range: [0, 4],
+                autorange: false
             }
         };
         Plotly.plot('Fonctionnement', data, layout);
@@ -191,7 +194,7 @@
                 }
             },
             yaxis2: {
-                title: 'REFERENCE',
+                title: 'TEMPERATURE',
                 side: 'right',
                 overlaying: 'y',
                 titlefont: {
@@ -204,7 +207,7 @@
                     family: 'Old Standard TT, serif',
                     size: 14,
                     color: 'black'
-                }
+                },
             }
         };
         Plotly.plot('Analyse', data2, layout2);

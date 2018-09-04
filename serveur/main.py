@@ -42,18 +42,17 @@ def get_data(log_file):
         data2_y_c2 = []
         data2_y_k = []
         for line in lines:
-            #Test stupide pour s'assurer que la ligne est une ligne de data
-            if line[0] == "2":
+            if line[0] != 'D' :
                 data = line.split(';')
                 if len(data) > 12:
                     data_x.append(data[0])
                     data_y_te.append(data[7])
                     data_y_t2.append(data[8])
                     data_y_rV.append(data[1])
-                    data_y_rM.append(data[2])
-                    data_y_rI.append(data[3])
-#                    data_y_rM.append(int(data[2])+1.2)
-#                    data_y_rI.append(int(data[3])+2.4)
+#                    data_y_rM.append(data[2])
+#                    data_y_rI.append(data[3])
+                    data_y_rM.append(int(data[2])+1.2)
+                    data_y_rI.append(int(data[3])+2.4)
                     data2_y_c1.append(data[5])
                     data2_y_c2.append(data[6])
                     data2_y_k.append(data[11])
