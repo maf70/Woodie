@@ -33,22 +33,32 @@ LOGGER = logging.getLogger(__name__)
 def get_data(log_file):
     with open(log_file, "r") as lines:
         data_x = []
-        data_y_1 = []
-        data_y_2 = []
-        data_y_3 = []
-        data_y_4 = []
+        data_y_te = []
+        data_y_t2 = []
+        data_y_rV = []
+        data_y_rM = []
+        data_y_rI = []
+        data2_y_c1 = []
+        data2_y_c2 = []
+        data2_y_k = []
         for line in lines:
             #Test stupide pour s'assurer que la ligne est une ligne de data
             if line[0] == "2":
                 data = line.split(';')
-                if len(data) > 6:
+                if len(data) > 12:
                     data_x.append(data[0])
-                    data_y_1.append(data[6])
-                    data_y_2.append(data[1])
-                    data_y_3.append(int(data[2])+1.2)
-                    data_y_4.append(int(data[3])+2.4)
+                    data_y_te.append(data[7])
+                    data_y_t2.append(data[8])
+                    data_y_rV.append(data[1])
+                    data_y_rM.append(data[2])
+                    data_y_rI.append(data[3])
+#                    data_y_rM.append(int(data[2])+1.2)
+#                    data_y_rI.append(int(data[3])+2.4)
+                    data2_y_c1.append(data[5])
+                    data2_y_c2.append(data[6])
+                    data2_y_k.append(data[11])
 
-    return data_x, data_y_1, data_y_2, data_y_3, data_y_4
+    return data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k
 
 def isint(x):
     try:
@@ -82,8 +92,9 @@ def index():
 def graph():
     try:
         log_file = request.form['log_radio']
-        data_x, data_y_1, data_y_2, data_y_3, data_y_4 = get_data(config.woodie_log_directory+log_file)
-        return render_template('graph.html', data_x=data_x, data_y_1=data_y_1, data_y_2=data_y_2, data_y_3=data_y_3, data_y_4=data_y_4)
+        jour = log_file.split('.')[0]
+        data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k = get_data(config.woodie_log_directory+log_file)
+        return render_template('graph.html', log_file=jour, data_x=data_x, data_y_te=data_y_te, data_y_t2=data_y_t2, data_y_rV=data_y_rV, data_y_rM=data_y_rM, data_y_rI=data_y_rI, data2_y_c1=data2_y_c1, data2_y_c2=data2_y_c2, data2_y_k=data2_y_k)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
         return render_template('error.html', error=str(e))

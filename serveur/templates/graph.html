@@ -14,14 +14,16 @@
         <title>WOODIE</title>
         <h2>GRAPHS WOODIE</h2>
         <h3>TEMPERATURE & ACTIVATION RELAIS</h3>
-        <div id='example' ></div>
+        <div id='Fonctionnement' ></div>
+        <h3>CAPTEURS ROTATION & SONDE K</h3>
+        <div id='Analyse' ></div>
     </body>
     <script>
         data = [
             {
                 x: {{ data_x|safe }},
-                y: {{ data_y_1|safe }},
-                name: 'Temperature',
+                y: {{ data_y_te|safe }},
+                name: 'Temperature eau',
                 yaxis: 'y1',
                 offset: '100',
                 type: 'scatter',
@@ -32,7 +34,17 @@
             },
             {
                 x: {{ data_x|safe }},
-                y: {{ data_y_2|safe }},
+                y: {{ data_y_t2|safe }},
+                name: 'Temperature 2',
+                yaxis: 'y1',
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
+            },
+            {
+                x: {{ data_x|safe }},
+                y: {{ data_y_rV|safe }},
                 name: 'Ventilateur',
                 yaxis: 'y2',
                 type: 'scatter',
@@ -42,7 +54,7 @@
             },
             {
                 x: {{ data_x|safe }},
-                y: {{ data_y_3|safe }},
+                y: {{ data_y_rM|safe }},
                 name: 'Moteur',
                 yaxis: 'y2',
                 type: 'scatter',
@@ -53,7 +65,7 @@
             },
             {
                 x: {{ data_x|safe }},
-                y: {{ data_y_4|safe }},
+                y: {{ data_y_rI|safe }},
                 name: 'Inversion moteur',
                 yaxis: 'y2',
                 type: 'scatter',
@@ -66,11 +78,11 @@
         ];
         var layout = {
             xaxis: {
-                title: 'DATE',
+                title: '{{log_file}}',
                 titlefont: {
                     family: 'Arial, sans-serif',
                     size: 18,
-                    color: 'lightgrey'
+                    color: 'black'
                 },
                 showticklabels: false,
                 tickangle: 70,
@@ -85,7 +97,7 @@
                 titlefont: {
                     family: 'Arial, sans-serif',
                     size: 18,
-                    color: 'lightgrey'
+                    color: 'black'
                 },
                 showticklabels: true,
                 tickfont: {
@@ -101,7 +113,7 @@
                 titlefont: {
                     family: 'Arial, sans-serif',
                     size: 18,
-                    color: 'lightgrey'
+                    color: 'black'
                 },
                 showticklabels: true,
                 tickfont: {
@@ -111,7 +123,91 @@
                 }
             }
         };
-        Plotly.plot('example', data, layout);
+        Plotly.plot('Fonctionnement', data, layout);
+
+        data2 = [
+            {
+                x: {{ data_x|safe }},
+                y: {{ data2_y_c1|safe }},
+                name: 'Capteur moteur',
+                yaxis: 'y1',
+                offset: '100',
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
+
+            },
+            {
+                x: {{ data_x|safe }},
+                y: {{ data2_y_c2|safe }},
+                name: 'Capteur tremie',
+                yaxis: 'y1',
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
+            },
+            {
+                x: {{ data_x|safe }},
+                y: {{ data2_y_k|safe }},
+                name: 'Sonde K',
+                yaxis: 'y2',
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
+
+            }
+        ];
+        var layout2 = {
+            xaxis: {
+                title: '{{log_file}}',
+                titlefont: {
+                    family: 'Arial, sans-serif',
+                    size: 18,
+                    color: 'black'
+                },
+                showticklabels: false,
+                tickangle: 70,
+                tickfont: {
+                    family: 'Old Standard TT, serif',
+                    size: 11,
+                    color: 'black'
+                }
+            },
+            yaxis: {
+                title: 'IMPULSIONS / 0.5 S',
+                titlefont: {
+                    family: 'Arial, sans-serif',
+                    size: 18,
+                    color: 'black'
+                },
+                showticklabels: true,
+                tickfont: {
+                    family: 'Old Standard TT, serif',
+                    size: 14,
+                    color: 'black'
+                }
+            },
+            yaxis2: {
+                title: 'REFERENCE',
+                side: 'right',
+                overlaying: 'y',
+                titlefont: {
+                    family: 'Arial, sans-serif',
+                    size: 18,
+                    color: 'black'
+                },
+                showticklabels: true,
+                tickfont: {
+                    family: 'Old Standard TT, serif',
+                    size: 14,
+                    color: 'black'
+                }
+            }
+        };
+        Plotly.plot('Analyse', data2, layout2);
     </script>
 </html>
 
