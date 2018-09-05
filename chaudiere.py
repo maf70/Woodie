@@ -55,21 +55,21 @@ class chaudiere(Thread):
         self.ledError = hw.Led(reglages.l1)
         self.poussoirReprise = hw.Entree("Pr",reglages.p1,200)
 
-        self.ecran    = hw.Afficheur( [ "", "Eau :", "Ext :", "Moteur :" ], [
+        self.ecran    = hw.Afficheur( [ "T   Ct", "", "", "" ], [
           # [ object , colonne , ligne, longueur ],
-          [ self.ventilo , 0, 0, 1 ],
-          [ self.moteur  , 1, 0, 1 ],
-          [ self.inverse , 2, 0, 1 ],
+          [ self.ventilo , 14, 3, 1 ],
+          [ self.moteur  , 15, 3, 1 ],
+          [ self.inverse , 16, 3, 1 ],
           # [ self.reserve , 3, 0, 1 ],
-          [ self.capteur_moteur , 9, 3, 2 ],
-          [ self.capteur_moteur2 , 12, 3, 2 ],
-          [ self.t_eau , 6, 1, 3 ],
-          [ self.t_secu , 6, 2, 3 ],
+          [ self.capteur_moteur , 4, 1, 2 ],
+          [ self.capteur_moteur2 , 4, 2, 2 ],
+          [ self.t_eau , 0, 1, 3 ],
+          [ self.t_secu , 0, 2, 3 ],
           [ self.d_secteur , 18, 3, 1 ],
           [ self.d_secuMeca , 19, 3, 1 ],
-          [ self.poussoirReprise, 16, 3,1 ],
-          [ self , 4, 0, 12 ],
-          [ self.sondeK , 13, 1, 4 ]
+#          [ self.poussoirReprise, 16, 3,1 ],
+          [ self , 9, 1, 11 ],
+          [ self.sondeK , 0, 3, 4 ]
           ] )
 
         self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ] ] )
