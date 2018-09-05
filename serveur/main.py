@@ -9,7 +9,7 @@ import logging
 import logging.handlers
 import random
 import json
-import datetime
+from datetime import datetime
 from time import time as current_time
 import config
 import os
@@ -93,7 +93,7 @@ def graph():
         log_file = request.form['log_radio']
         jour = log_file.split('.')[0]
         data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k = get_data(config.woodie_log_directory+log_file)
-        return render_template('graph.html', log_file=jour, data_x=data_x, data_y_te=data_y_te, data_y_t2=data_y_t2, data_y_rV=data_y_rV, data_y_rM=data_y_rM, data_y_rI=data_y_rI, data2_y_c1=data2_y_c1, data2_y_c2=data2_y_c2, data2_y_k=data2_y_k)
+        return render_template('graph.html', dt=datetime.now(), log_file=jour, data_x=data_x, data_y_te=data_y_te, data_y_t2=data_y_t2, data_y_rV=data_y_rV, data_y_rM=data_y_rM, data_y_rI=data_y_rI, data2_y_c1=data2_y_c1, data2_y_c2=data2_y_c2, data2_y_k=data2_y_k)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
         return render_template('error.html', error=str(e))
