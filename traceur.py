@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import time
 import sys
-from datetime import datetime
+
+import os.path 
 
 from threading import Thread
 
@@ -10,8 +11,9 @@ class Traceur(Thread):
 
     """Thread Traceur : Record all parameters each second"""
 
-    def __init__(self, devices):
+    def __init__(self, dt, devices):
         Thread.__init__(self)
+        self.dt = dt
         self.devices_list = devices
         self.dont_stop = 1
         self.active = 1
@@ -19,31 +21,25 @@ class Traceur(Thread):
 
     def run(self):
 
-        dt = datetime.now()
-        tt=dt.timetuple()
-        f=open("LOGS/"+str(dt.date())+".log","a")
-        f.write("\nDate_Time;")
-
-        for el in self.devices_list :
-          f.write(el.label+";")
-        f.write("\n")
+        f = 0
 
         while self.dont_stop == 1 :
          if self.active == 1 or self.activeReq == 1:
           self.active = self.activeReq
-          dt = datetime.now()
-          tt=dt.timetuple()
+
           # Changement de fichier ?
-          if tt[3] == 0 and tt[4] == 0 and tt[5] == 0:
-            f.close()
-            f=open("LOGS/"+str(dt.date())+".log","a")
-            f.write("\nDate_Time;")
+          if self.dt.newDateF() == 1:
+            if f :
+              f.close()
+            fichier = "LOGS/"+self.dt.date+".log"
+            fe = os.path.isfile(fichier)
+            f=open(fichier,"a")
 
-            for el in self.devices_list :
-              f.write(el.label+";")
-            f.write("\n")
+            if fe == 0 :
+              for el in self.devices_list :
+                f.write(el.label+";")
+              f.write("\n")
 
-          f.write(str(dt.time()).split(".")[0]+";")
           for el in self.devices_list :
             f.write(el.log()+";")
           f.write("\n")

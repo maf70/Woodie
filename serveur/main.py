@@ -42,7 +42,7 @@ def get_data(log_file):
         data2_y_c2 = []
         data2_y_k = []
         for line in lines:
-            if line[0] != 'D' :
+            if line[0] != 'T' :
                 data = line.split(';')
                 if len(data) > 12:
                     data_x.append(data[0])

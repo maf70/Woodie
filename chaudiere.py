@@ -8,6 +8,7 @@ import reglages
 from reglages import ON as ON
 from reglages import OFF as OFF
 import hw
+import logic
 import controleurs
 import traceur as trace
 
@@ -27,6 +28,8 @@ class chaudiere(Thread):
           # On ne sort pas ...
           while 1:
             time.sleep(3)
+
+        self.dateur   = logic.dateur()
 
         self.ventilo  = hw.Sortie("V", reglages.r1)
         self.moteur   = hw.Sortie("M", reglages.r2)
@@ -57,6 +60,7 @@ class chaudiere(Thread):
 
         self.ecran    = hw.Afficheur( [ "T   Ct", "", "", "" ], [
           # [ object , colonne , ligne, longueur ],
+          [ self.dateur  , 9, 0, 11 ],
           [ self.ventilo , 14, 3, 1 ],
           [ self.moteur  , 15, 3, 1 ],
           [ self.inverse , 16, 3, 1 ],
@@ -74,8 +78,9 @@ class chaudiere(Thread):
 
         self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ] ] )
 
-        self.trace    = trace.Traceur( [
+        self.trace    = trace.Traceur( self.dateur, [
           # [ object ],
+          self.dateur,
           self.ventilo,
           self.moteur,
           self.inverse,
@@ -91,13 +96,15 @@ class chaudiere(Thread):
           self ])
 
         self.dont_stop = 1
-        self.phase = "Off"
+        self.phase = "Start"
         self.modif = 1
         self.label = "Woodie"
 
     def run(self):
 
         # Start all
+        self.dateur.start()
+
         self.capteur_moteur.start()
         self.capteur_moteur2.start()
 
@@ -117,6 +124,8 @@ class chaudiere(Thread):
         # Arret par defaut
         ventilo_etat = moteur_etat = anomalie = 0
         t=0
+
+        time.sleep(2)
 
         while self.dont_stop == 1 :
 
@@ -216,6 +225,7 @@ class chaudiere(Thread):
         self.capteur_moteur2.etat(0)
         self.ctrlVentilo.etat(0)
         self.ctrlMoteur.etat(0)
+        self.dateur.etat(0)
 
         # Attente fin des taches
         self.trace.join()
@@ -236,6 +246,8 @@ class chaudiere(Thread):
         print "Arret controle ventilo"
         self.ctrlMoteur.join()
         print "Arret controle moteur"
+        self.dateur.join()
+        print "Arret dateur"
 
     def etat( self, s ):
         self.dont_stop = s
