@@ -98,6 +98,8 @@ class controleurMoteur(Thread):
         self.dont_stop = 1
         self.vitesse = 0
         self.phase = 0
+        self.StatNbBlocages = 0
+        self.modif = 1
 
     def run(self):
         while self.dont_stop > 0 :
@@ -127,6 +129,8 @@ class controleurMoteur(Thread):
                 if blocage :
                   # Detection d'un blocage
                   nbBlocage += 1
+                  self.StatNbBlocages += 1
+                  self.modif = 1
                   self.arret()
                   compteur_local = 0
                   self.phase = 2
@@ -149,6 +153,8 @@ class controleurMoteur(Thread):
                 if blocage :
                   # Detection d'un blocage
                   nbBlocage += 1
+                  self.StatNbBlocages += 1
+                  self.modif = 1
                   self.arret()
                   compteur_local = 0
                   self.phase = 4
@@ -226,8 +232,12 @@ class controleurMoteur(Thread):
 #          el.on()
 
     # Affichage et log
+    def RazStats( self ):
+        self.StatNbBlocages = 0
+        self.modif = 1
+
     def affiche( self ):
-        return ""
+        return str(self.StatNbBlocages)
 
     def log( self ):
         if self.commande == OFF :
