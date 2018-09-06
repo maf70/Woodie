@@ -34,9 +34,14 @@
         "valeur": 0,
         "modifiable": true
     },
-    "vMin": {
-        "label": "Nombre minimum d'impulsion minimum par période",
-        "valeur": 2,
+    "vMinVis": {
+        "label": "Nombre minimum d'impulsion par période pour le capteur VIS",
+        "valeur": 1,
+        "modifiable": true
+    },
+    "vMinTremie": {
+        "label": "Nombre minimum d'impulsion par période pour le capteur TREMIE",
+        "valeur": 4,
         "modifiable": true
     },
     "dInverse": {

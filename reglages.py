@@ -38,7 +38,8 @@ class Params():
 
           # Parametres moteur
           self.cycleMoteur = conf["cycleMoteur"]["valeur"]
-          self.vMin        = conf["vMin"]["valeur"]
+          self.vMinVis     = conf["vMinVis"]["valeur"]
+          self.vMinTremie  = conf["vMinTremie"]["valeur"]
           self.dInverse    = conf["dInverse"]["valeur"]
           self.nInverse    = conf["nInverse"]["valeur"]
           self.dDecalage   = conf["dDecalage"]["valeur"]

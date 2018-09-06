@@ -80,12 +80,11 @@ class controleurMoteur(Thread):
             1 output for reverse direction when a blocking state is detected (need 2 pulses counters)
             Stop and alert if motor completely blocked """
 
-    def __init__(self, sortie, compteurs, vMin, inverse, tCycle, tInverse, nInverse, tDecale):
+    def __init__(self, sortie, compteurs, inverse, tCycle, tInverse, nInverse, tDecale):
         Thread.__init__(self)
         self.cmd = sortie
         self.cmdInverse = inverse
         self.compteur_list = compteurs
-        self.vMin = vMin
         self.tCycle = tCycle
         self.tInverse = tInverse
         self.nInverse = nInverse
@@ -124,7 +123,8 @@ class controleurMoteur(Thread):
                 self.duree -= self.tCycle
                 blocage = 0
                 for el in self.compteur_list :
-                  if el.valeur() < self.vMin :
+                  if el.valeur() < el.vMin :
+                    el.incBlock()
                     blocage = 1
                 if blocage :
                   # Detection d'un blocage
@@ -148,7 +148,8 @@ class controleurMoteur(Thread):
               elif self.phase == 3 :      ### Rotation inverse
                 blocage = 0
                 for el in self.compteur_list :
-                  if el.valeur() < self.vMin :
+                  if el.valeur() < el.vMin :
+                    el.incBlock()
                     blocage = 1
                 if blocage :
                   # Detection d'un blocage

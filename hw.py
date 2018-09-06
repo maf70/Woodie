@@ -121,10 +121,12 @@ class Compteur(Thread):
 
     """Compteur : this object is a thread which count pulse from optical sensor"""
 
-    def __init__(self, label, port, rebond):
+    def __init__(self, label, port, vMin, rebond):
         Thread.__init__(self)
         self.label = label
         self.port = port
+        self.vMin = vMin
+        self.nbBlock = 0
         self.rebond = rebond
         self.compteur = 0
         self.modif = 0
@@ -163,10 +165,15 @@ class Compteur(Thread):
     def tourne(self):
         return self.compteur - self.compteur_prec
 
+    def incBlock(self):
+        self.nbBlock += 1
+        self.modif = 1
+
     def raz(self):
         self.compteur = 0
         self.compteur_prec = 0
         self.valide = 0
+        self.nbBlock = 0
         self.modif = 1
 
     def etat( self, s ):
@@ -176,7 +183,7 @@ class Compteur(Thread):
         return self.vitesse
 
     def affiche(self):
-        return str(self.vitesse)
+        return str(self.vitesse)+"/"+str(self.nbBlock)
 
     def log(self):
         return str(self.vitesse)

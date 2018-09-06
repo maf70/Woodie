@@ -37,8 +37,13 @@ class chaudiere(Thread):
 # pas utilise, force la sortie a OFF
         self.reserve  = hw.Sortie(" ", reglages.r4)
 
-        self.capteur_moteur  = hw.Compteur("C1", reglages.b1, 10)
-        self.capteur_moteur2 = hw.Compteur("C2", reglages.b2, 10)
+        listeCapteurs = []
+        self.capteurVis  = hw.Compteur("C1", reglages.b1, self.r.vMinVis, 10)
+        if self.r.vMinVis > 0 :
+          listeCapteurs.append(self.capteurVis)
+        self.capteurTremie = hw.Compteur("C2", reglages.b2, self.r.vMinTremie, 10)
+        if self.r.vMinTremie > 0 :
+          listeCapteurs.append(self.capteurTremie)
 
         self.t_eau = hw.Thermo("Te", self.r.sondeTempEau)
         self.t_secu = hw.Thermo("Ts", self.r.sondeTempMot)
@@ -52,7 +57,7 @@ class chaudiere(Thread):
         self.sondeK = hw.SpiSondeK("K", reglages.SpiCLK, reglages.SpiCS, reglages.SpiDO)
 
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
-        self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, [ self.capteur_moteur2] , self.r.vMin,
+        self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, listeCapteurs ,
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
 
         self.ledError = hw.Led(reglages.l1)
@@ -65,8 +70,9 @@ class chaudiere(Thread):
           [ self.moteur  , 15, 3, 1 ],
           [ self.inverse , 16, 3, 1 ],
           # [ self.reserve , 3, 0, 1 ],
-          [ self.capteur_moteur , 4, 1, 2 ],
-          [ self.capteur_moteur2 , 4, 2, 2 ],
+          [ self.capteurVis , 4, 1, 5 ],
+          [ self.capteurTremie , 4, 2, 5 ],
+#          [ self.ctrlMoteur , 7, 2, 2],
           [ self.t_eau , 0, 1, 3 ],
           [ self.t_secu , 0, 2, 3 ],
           [ self.d_secteur , 18, 3, 1 ],
@@ -86,8 +92,8 @@ class chaudiere(Thread):
           self.inverse,
           # self.reserve,
           self.poussoirReprise,
-          self.capteur_moteur,
-          self.capteur_moteur2,
+          self.capteurVis,
+          self.capteurTremie,
           self.t_eau,
           self.t_secu,
           self.d_secteur,
@@ -105,8 +111,8 @@ class chaudiere(Thread):
         # Start all
         self.dateur.start()
 
-        self.capteur_moteur.start()
-        self.capteur_moteur2.start()
+        self.capteurVis.start()
+        self.capteurTremie.start()
 
         self.d_secteur.start()
         self.d_secuMeca.start()
@@ -221,8 +227,8 @@ class chaudiere(Thread):
         self.dallasManager.etat(0)
         self.i2cManager.etat(0)
         self.sondeK.etat(0)
-        self.capteur_moteur.etat(0)
-        self.capteur_moteur2.etat(0)
+        self.capteurVis.etat(0)
+        self.capteurTremie.etat(0)
         self.ctrlVentilo.etat(0)
         self.ctrlMoteur.etat(0)
         self.dateur.etat(0)
@@ -238,10 +244,10 @@ class chaudiere(Thread):
         self.d_secteur.join()
         self.d_secuMeca.join()
         print "Arret detecteurs 220 V"
-#        self.capteur_moteur.join()
-        print "Arret capteur moteur 1"
-        self.capteur_moteur2.join()
-        print "Arret capteur moteur 2"
+        self.capteurVis.join()
+        print "Arret capteur vis"
+        self.capteurTremie.join()
+        print "Arret capteur tremie"
         self.ctrlVentilo.join()
         print "Arret controle ventilo"
         self.ctrlMoteur.join()
