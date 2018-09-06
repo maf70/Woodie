@@ -37,13 +37,13 @@ class chaudiere(Thread):
 # pas utilise, force la sortie a OFF
         self.reserve  = hw.Sortie(" ", reglages.r4)
 
-        listeCapteurs = []
+        self.listeCapteurs = []
         self.capteurVis  = hw.Compteur("C1", reglages.b1, self.r.vMinVis, 10)
         if self.r.vMinVis > 0 :
-          listeCapteurs.append(self.capteurVis)
+          self.listeCapteurs.append(self.capteurVis)
         self.capteurTremie = hw.Compteur("C2", reglages.b2, self.r.vMinTremie, 10)
         if self.r.vMinTremie > 0 :
-          listeCapteurs.append(self.capteurTremie)
+          self.listeCapteurs.append(self.capteurTremie)
 
         self.t_eau = hw.Thermo("Te", self.r.sondeTempEau)
         self.t_secu = hw.Thermo("Ts", self.r.sondeTempMot)
@@ -57,7 +57,7 @@ class chaudiere(Thread):
         self.sondeK = hw.SpiSondeK("K", reglages.SpiCLK, reglages.SpiCS, reglages.SpiDO)
 
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
-        self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, listeCapteurs ,
+        self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, self.listeCapteurs ,
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
 
         self.ledError = hw.Led(reglages.l1)
@@ -77,7 +77,7 @@ class chaudiere(Thread):
           [ self.t_secu , 0, 2, 3 ],
           [ self.d_secteur , 18, 3, 1 ],
           [ self.d_secuMeca , 19, 3, 1 ],
-#          [ self.poussoirReprise, 16, 3,1 ],
+          [ self.poussoirReprise, 12, 3, 1 ],
           [ self , 9, 1, 11 ],
           [ self.sondeK , 0, 3, 4 ]
           ] )
@@ -167,6 +167,11 @@ class chaudiere(Thread):
 
               # Lecture etat poussoir(s)
               poussoirReprise = self.poussoirReprise.valeur()
+              if poussoirReprise == 1 :
+                # Remise a zero des compteurs blocage
+                for c in self.listeCapteurs :
+                  c.razBlock()
+
 
               # Si anomalie, on arrete tout :
               if anomalie != 0:

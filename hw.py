@@ -100,19 +100,20 @@ class Entree():
     def __init__(self, label, port, rebond):
         self.label = label
         self.port = port
+        self.val = 2
         self.rebond = rebond
         GPIO.setup(self.port, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self.modif = 0
         self.prec  = 0
 
     def valeur(self):
-        val = GPIO.input(self.port)^1
-        if val != self.prec : self.modif = 1
-        self.prec = val
-        return val
+        self.val = GPIO.input(self.port)^1
+        if self.val != self.prec : self.modif = 1
+        self.prec = self.val
+        return self.val
 
     def affiche(self):
-        return str(GPIO.input(self.port)^1)
+        return str(self.val)
 
     def log(self):
         return str(GPIO.input(self.port)^1)
@@ -169,11 +170,13 @@ class Compteur(Thread):
         self.nbBlock += 1
         self.modif = 1
 
+    def razBlock(self):
+        self.nbBlock = 0
+
     def raz(self):
         self.compteur = 0
         self.compteur_prec = 0
         self.valide = 0
-        self.nbBlock = 0
         self.modif = 1
 
     def etat( self, s ):
