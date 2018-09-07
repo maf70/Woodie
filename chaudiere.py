@@ -56,6 +56,8 @@ class chaudiere(Thread):
 #        self.analog = hw.I2cAnalog("A0", reglages.i2cNano)
         self.sondeK = hw.SpiSondeK("K", reglages.SpiCLK, reglages.SpiCS, reglages.SpiDO)
 
+        self.stats    = logic.stats( "Stats" )
+
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
         self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, self.listeCapteurs ,
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
@@ -79,7 +81,8 @@ class chaudiere(Thread):
           [ self.d_secuMeca , 19, 3, 1 ],
           [ self.poussoirReprise, 12, 3, 1 ],
           [ self , 9, 1, 11 ],
-          [ self.sondeK , 0, 3, 4 ]
+          [ self.stats , 9, 2, 11 ],
+          [ self.sondeK, 0, 3, 4 ]
           ] )
 
         self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ] ] )
@@ -99,7 +102,9 @@ class chaudiere(Thread):
           self.d_secteur,
           self.d_secuMeca,
           self.sondeK,
-          self ])
+          self,
+          self.stats
+          ])
 
         self.dont_stop = 1
         self.modif = 1
@@ -126,6 +131,7 @@ class chaudiere(Thread):
         self.sondeK.start()
 
         self.trace.start()
+        self.stats.start()
 
         # Arret par defaut
         ventilo_etat = moteur_etat = anomalie = 0
@@ -243,6 +249,7 @@ class chaudiere(Thread):
         self.ctrlVentilo.etat(0)
         self.ctrlMoteur.etat(0)
         self.dateur.etat(0)
+        self.stats.etat(0)
 
         # Attente fin des taches
         self.trace.join()
@@ -264,7 +271,8 @@ class chaudiere(Thread):
         self.ctrlMoteur.join()
         print "Arret controle moteur"
         self.dateur.join()
-        print "Arret dateur"
+        self.stats.join()
+        print "Arret dateur et stats"
 
     def etat( self, s ):
         self.dont_stop = s
@@ -279,5 +287,11 @@ class chaudiere(Thread):
     def setPhase(self, p):
         self.phase = p
         self.modif = 1
+        if p[0] == "E" :
+          self.stats.status(2)
+        elif p == "Chauffe" :
+          self.stats.status(1)
+        else :
+          self.stats.status(0)
 
 
