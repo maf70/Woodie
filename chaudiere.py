@@ -102,8 +102,8 @@ class chaudiere(Thread):
           self ])
 
         self.dont_stop = 1
-        self.phase = "Start"
         self.modif = 1
+        self.setPhase("Start")
         self.label = "Woodie"
 
     def run(self):
@@ -129,38 +129,46 @@ class chaudiere(Thread):
 
         # Arret par defaut
         ventilo_etat = moteur_etat = anomalie = 0
+        anomalie_foyer = 0
         t=0
 
         time.sleep(2)
 
         while self.dont_stop == 1 :
 
+              if self.r.tMinFoyer != 0 and ventilo_etat == 1 and t > self.r.dChauffe and self.r.tMinFoyer > self.sondeK.valeur() :
+                anomalie_foyer = 1
+
               # Controle temperature moteur / coupure secteur / ...
               if self.t_eau.valide != 1 :
-                self.phase = "E:Capt E"
-                self.modif = anomalie = 1
+                self.setPhase("E:Capt E")
+                anomalie = 1
               elif self.t_secu.valide != 1 :
-                self.phase = "E:Capt M"
-                self.modif = anomalie = 2
+                self.setPhase("E:Capt M")
+                anomalie = 2
               elif self.t_secu.temperature >= self.r.tSecu:
-                self.phase = "E:Secu"
-                self.modif = anomalie = 3
+                self.setPhase("E:Secu")
+                anomalie = 3
               elif self.d_secteur.valeur() == 0:
-                self.phase = "E:Secteur"
-                self.modif = anomalie = 4
+                self.setPhase("E:Secteur")
+                anomalie = 4
                 self.trace.off()
               elif self.d_secuMeca.valeur() == 0:
-                self.phase = "E:SecuMec"
-                self.modif = anomalie = 5
-#              elif self.analog.valide == 0:
-#                self.phase = "E:Capt K"
-#                self.modif = anomalie = 6
+                self.setPhase("E:SecuMec")
+                anomalie = 5
+              elif self.sondeK.valide == 0:
+                self.setPhase("E:Sonde K")
+                anomalie = 6
               elif self.ctrlMoteur.estBloque() != 0 :
-                self.phase = "E:Blocage"
-                self.modif = anomalie = 7
+                self.setPhase("E:Blocage")
+                anomalie = 7
+              # Controle de la temperature foyer
+              elif anomalie_foyer != 0 :
+                  # Attendre que le foyer monte en temperature
+                  self.setPhase("E:Foyer")
+                  anomalie = 8
               elif anomalie != 0:
-                self.phase = "Reprise"
-                self.modif = 1
+                self.setPhase("Reprise")
                 anomalie = 0
                 self.ledError.off()
                 self.trace.on()
@@ -179,12 +187,13 @@ class chaudiere(Thread):
                 self.ctrlMoteur.pause(1)
                 self.ledError.on()
 
-                if anomalie == 7 and poussoirReprise == 1 :
+                if anomalie >= 7 and poussoirReprise == 1 :
                   # Deblocage moteur
                   self.ctrlMoteur.debloque()
 
                   # Fin de cycle et tentative reprise
-                  anomalie == 0
+                  anomalie_foyer = 0
+                  ventilo_etat = moteur_etat = 0
                   t = self.r.dCycle
 
               # Sinon cycle normal
@@ -197,8 +206,7 @@ class chaudiere(Thread):
                 # Si Repos et temperature seuil bas, redemarrage cycle de chauffe
                 if ventilo_etat == 0 and moteur_etat == 0 and self.t_eau.temperature <= self.r.tStart:
                   ventilo_etat = moteur_etat = 1
-                  self.phase = "Chauffe"
-                  self.modif = 1
+                  self.setPhase("Chauffe")
                   t=0
 
                 # Debut de cycle : test temperature et demarrage si besoin
@@ -213,12 +221,10 @@ class chaudiere(Thread):
                   if ventilo_etat == 1 and self.t_eau.temperature >= self.r.tStop:
 # Decommenter si besoin dernier cycle sans ventilo
 #                    ventilo_etat = 0
-#                    self.phase = "Fin ch."
-#                    self.modif = 1
+#                    self.setPhase("Fin ch.")
 #                  elif ventilo_etat == 0 and moteur_etat == 1 :
                     moteur_etat = ventilo_etat = 0
-                    self.phase = "Repos"
-                    self.modif = 1
+                    self.setPhase("Repos")
                   t=0
 
               time.sleep(1)
@@ -262,12 +268,16 @@ class chaudiere(Thread):
 
     def etat( self, s ):
         self.dont_stop = s
-        self.phase = "Arret"
+        self.setPhase("Arret")
 
     def affiche(self):
         return self.phase
 
     def log(self):
         return self.phase
+
+    def setPhase(self, p):
+        self.phase = p
+        self.modif = 1
 
 

@@ -29,6 +29,16 @@
         "valeur": 40,
         "modifiable": true
     },
+    "dChauffe": {
+        "label": "Delai avant de valider temperature foyer",
+        "valeur": 30,
+        "modifiable": true
+    },
+    "tMinFoyer": {
+        "label": "Temperature minimum du foyer en chauffe normale",
+        "valeur": 0,
+        "modifiable": true
+    },
     "cycleMoteur": {
         "label": "Faire un dernier cycle sans ventilateur ?",
         "valeur": 0,

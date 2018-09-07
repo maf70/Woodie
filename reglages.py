@@ -31,6 +31,10 @@ class Params():
           # Temperature vis securite
           self.tSecu  = conf["tSecu"]["valeur"]
 
+          # Temperature vis securite
+          self.dChauffe   = conf["dChauffe"]["valeur"]
+          self.tMinFoyer  = conf["tMinFoyer"]["valeur"]
+
           # Duree d'un cycle en seconde
           self.dCycle   = conf["dCycle"]["valeur"]
           self.dVentilo = conf["dVentilo"]["valeur"]

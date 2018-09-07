@@ -293,7 +293,7 @@ class SpiSondeK(Thread):
         self.CLK = CLK
         self.CS = CS
         self.DO = DO
-        self.valeur = 0
+        self.val = 0
         self.modif = 0
         self.valide = 0
         self.dont_stop = 1
@@ -301,27 +301,27 @@ class SpiSondeK(Thread):
 
     def run(self):
         while self.dont_stop == 1 :
-          valeur = self.valeur
+          valeur = self.val
           try :
-            self.valeur = int(self.sensor.readTempC())
+            self.val = int(self.sensor.readTempC())
             self.valide = 1
 
-          except IOError:
+          except :
             self.valide = 0
 
-          if valeur != self.valeur :
+          if valeur != self.val :
             self.modif = 1
 
           time.sleep(1)
 
     def valeur(self):
-        return self.valeur
+        return self.val
 
     def affiche(self):
-        return str(self.valeur)
+        return str(self.val)
 
     def log(self):
-        return str(self.valeur)
+        return str(self.val)
 
     def etat( self, s ):
         self.dont_stop = s
