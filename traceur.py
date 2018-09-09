@@ -56,7 +56,7 @@ class Traceur(Thread):
     def etat( self, s ):
         self.dont_stop = s
 
-
-
-
-
+def logErreur( dt, erreur) :
+    f=open("LOGS/"+dt.date+".err","a")
+    f.write(dt.time+"\t"+erreur+"\n")
+    f.close()

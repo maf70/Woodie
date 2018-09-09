@@ -108,7 +108,7 @@ class chaudiere(Thread):
 
         self.dont_stop = 1
         self.modif = 1
-        self.setPhase("Start")
+        self.phase = "not set"
         self.label = "Woodie"
 
     def run(self):
@@ -132,6 +132,8 @@ class chaudiere(Thread):
 
         self.trace.start()
         self.stats.start()
+
+        self.setPhase("I:Start")
 
         # Arret par defaut
         ventilo_etat = moteur_etat = anomalie = 0
@@ -170,11 +172,11 @@ class chaudiere(Thread):
                 anomalie = 7
               # Controle de la temperature foyer
               elif anomalie_foyer != 0 :
-                  # Attendre que le foyer monte en temperature
-                  self.setPhase("E:Foyer")
-                  anomalie = 8
+                # Attendre que le foyer monte en temperature
+                self.setPhase("E:Foyer")
+                anomalie = 8
               elif anomalie != 0:
-                self.setPhase("Reprise")
+                self.setPhase("I:Reprise")
                 anomalie = 0
                 self.ledError.off()
                 self.trace.on()
@@ -276,7 +278,7 @@ class chaudiere(Thread):
 
     def etat( self, s ):
         self.dont_stop = s
-        self.setPhase("Arret")
+        self.setPhase("I:Arret")
 
     def affiche(self):
         return self.phase
@@ -285,13 +287,15 @@ class chaudiere(Thread):
         return self.phase
 
     def setPhase(self, p):
-        self.phase = p
-        self.modif = 1
-        if p[0] == "E" :
-          self.stats.status(2)
-        elif p == "Chauffe" :
-          self.stats.status(1)
-        else :
-          self.stats.status(0)
+        if self.phase != p :
+          self.phase = p
+          self.modif = 1
+          if p[1] == ":" :
+            self.stats.status(2)
+            trace.logErreur(self.dateur, p)
+          elif p == "Chauffe" :
+            self.stats.status(1)
+          else :
+            self.stats.status(0)
 
 

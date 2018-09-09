@@ -17,6 +17,15 @@
         <div id='Fonctionnement' ></div>
         <h3>CAPTEURS ROTATION & SONDE K</h3>
         <div id='Analyse' ></div>
+        <h3>EVENEMENT(S) :</h3>
+        {% for e in errs %}
+           {% if loop.length == 0 %}
+             Vide.
+           {% else %}
+             {{ e }}<br>
+           {% endif %}
+        {% endfor %}
+
     </body>
     <script>
         data = [
