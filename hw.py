@@ -303,11 +303,14 @@ class SpiSondeK(Thread):
         while self.dont_stop == 1 :
           valeur = self.val
           try :
-            self.val = int(self.sensor.readTempC())
+            val = int(self.sensor.readTempC())
             self.valide = 1
 
           except :
             self.valide = 0
+
+          if self.valide and val > 0 :
+            self.val = val
 
           if valeur != self.val :
             self.modif = 1
