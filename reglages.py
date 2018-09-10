@@ -101,7 +101,8 @@ l1 = 26
 
 # Configuration gpio poussoir
 # !! Numerotation Broadcom !!
-p1 = 8
+p2 = 8
+p1 = 7
 
 # Configuration des gpio  du lcd
 # !! Numerotation Broadcom !!

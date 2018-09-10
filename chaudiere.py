@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import time
-import sys
+import os
 
 from threading import Thread
 
@@ -63,7 +63,8 @@ class chaudiere(Thread):
                           self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
 
         self.ledError = hw.Led(reglages.l1)
-        self.poussoirReprise = hw.Entree("Pr",reglages.p1,200)
+        self.poussoirReprise = hw.Entree("Pr",reglages.p2,200)
+        self.poussoirHalt = hw.Entree("Pr",reglages.p1,200)
 
         self.ecran    = hw.Afficheur( [ "T   Ct", "", "", "" ], [
           # [ object , colonne , ligne, longueur ],
@@ -80,6 +81,7 @@ class chaudiere(Thread):
           [ self.d_secteur , 18, 3, 1 ],
           [ self.d_secuMeca , 19, 3, 1 ],
           [ self.poussoirReprise, 12, 3, 1 ],
+          [ self.poussoirHalt, 11, 3, 1 ],
           [ self , 9, 1, 11 ],
           [ self.stats , 9, 2, 11 ],
           [ self.sondeK, 0, 3, 4 ]
@@ -107,6 +109,7 @@ class chaudiere(Thread):
           ])
 
         self.dont_stop = 1
+        self.halt = 0
         self.modif = 1
         self.phase = "not set"
         self.label = "Woodie"
@@ -194,6 +197,9 @@ class chaudiere(Thread):
                 for c in self.listeCapteurs :
                   c.razBlock()
 
+              self.halt = self.poussoirHalt.valeur()
+              if self.halt == 1 :
+                self.dont_stop = 0
 
               # Si anomalie, on arrete tout :
               if anomalie != 0:
@@ -281,6 +287,12 @@ class chaudiere(Thread):
         self.dateur.join()
         self.stats.join()
         print "Arret dateur et stats"
+
+        if self.halt == 1 :
+          print "HALT system"
+          os.system("sync")
+          time.sleep(2)
+          os.system("halt")
 
     def etat( self, s ):
         self.dont_stop = s
