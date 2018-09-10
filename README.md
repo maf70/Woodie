@@ -8,7 +8,7 @@ La chaudiere est composée de :
 - un moteur entrainant un ventilateur pour activer la combustion
 - un capteur de temperature (DS18B20) de l'eau en sortie de chaudiere
 - un capteur de temperature (DS18B20) de sécurité
-- un thermocouple (sonde K) pour mesurer la temperature du foyer (non exploite pour l'instant)
+- un thermocouple (sonde K) pour mesurer la temperature du foyer
 
 Fonctionnement de la chaudiere:
 - En debut de cycle (durée 5 minutes), la vis et le ventilateur sont actionnés
@@ -18,6 +18,7 @@ Fonctionnement de la chaudiere:
 - Si la temperature de l'eau est atteinte en fin de cycle, arret des cycles de chauffe
 - Dès que la temperature redescend en dessous du seuil bas, redemarrage des cycles de chauffe
 - Controle en permanance que les capteurs de temperatures sont toujours valide et que la temperature de securité n'est pas atteinte
+- Controle de la temperature du foyer (sonde K) et arret de la chaudiere si en dessous d'un minimum ( = Chaudiere eteinte )
 - En cas de blocage de la vis, on arrete le moteur puis on le fait tourner en sens inverse pendant quelques secondes
 - Verification que le moteur tourne en sens inverse
 - Gestion de la detection en cas de coupure secteur
@@ -48,7 +49,6 @@ I2C  : https://gist.github.com/DenisFromHR/cc863375a6e19dce359d
 SPI/MAX31855K  : https://github.com/adafruit/Adafruit_Python_MAX31855.git
 
 Reste à faire:
-- Exploiter Sonde K pour arreter la chaudiere si une anomalie de temperature est detectee dans le foyer
 - parametre si dernier cycle de plaquettes sans ventilateur lorsque le seuil temperature haut est atteint (en commentaire actuellement)
 
 
