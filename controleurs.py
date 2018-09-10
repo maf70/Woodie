@@ -187,6 +187,11 @@ class controleurMoteur(Thread):
     def estBloque(self):
         return self.blocage
 
+    def estInverse(self):
+        if self.phase >= 2 :
+          return 1
+        return 0
+
     def debloque(self):
         self.blocage = 0
 

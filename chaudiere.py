@@ -134,6 +134,7 @@ class chaudiere(Thread):
         self.stats.start()
 
         self.setPhase("I:Start")
+        self.lastEvent="None"
 
         # Arret par defaut
         ventilo_etat = moteur_etat = anomalie = 0
@@ -180,6 +181,11 @@ class chaudiere(Thread):
                 anomalie = 0
                 self.ledError.off()
                 self.trace.on()
+
+              if self.ctrlMoteur.estInverse() != 0 :
+                self.logMessage("I:Inverse")
+              else :
+                self.lastEvent="None"
 
               # Lecture etat poussoir(s)
               poussoirReprise = self.poussoirReprise.valeur()
@@ -297,5 +303,10 @@ class chaudiere(Thread):
             self.stats.status(1)
           else :
             self.stats.status(0)
+
+    def logMessage(self, p):
+        if self.lastEvent != p :
+          self.lastEvent = p
+          trace.logErreur(self.dateur, p)
 
 
