@@ -170,6 +170,16 @@
                     shape: 'hvh'
                 }
 
+            },
+            {
+                x: {{ data_x|safe }},
+                y: {{ data2_y_kmm|safe }},
+                name: 'Sonde K moy',
+                yaxis: 'y2',
+                type: 'scatter',
+                line: {
+                    shape: 'hvh'
+                }
             }
         ];
         var layout2 = {
@@ -216,7 +226,7 @@
                     family: 'Old Standard TT, serif',
                     size: 14,
                     color: 'black'
-                },
+                }
             }
         };
         Plotly.plot('Analyse', data2, layout2);

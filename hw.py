@@ -289,7 +289,7 @@ class SpiSondeK(Thread):
 
     def __init__(self, label, CLK, CS, DO):
         Thread.__init__(self)
-        self.label = label
+        self.label = label+";Kmm5"
         self.CLK = CLK
         self.CS = CS
         self.DO = DO
@@ -297,6 +297,8 @@ class SpiSondeK(Thread):
         self.modif = 0
         self.valide = 0
         self.dont_stop = 1
+        self.lastT = []
+        self.mm = 0
         self.sensor = MAX31855.MAX31855(self.CLK, self.CS, self.DO)
 
     def run(self):
@@ -311,20 +313,30 @@ class SpiSondeK(Thread):
 
           if self.valide and val > 0 :
             self.val = val
+            self.lastT.append(val)
+            l = len(self.lastT)
+            if l > 5 :
+              self.lastT.pop(0)
+              l -= 1
+            s = 0
+            for v in self.lastT:
+              s += v
+            self.mm = s / l
 
           if valeur != self.val :
             self.modif = 1
 
+
           time.sleep(1)
 
     def valeur(self):
-        return self.val
+        return self.mm
 
     def affiche(self):
-        return str(self.val)
+        return str(self.mm)
 
     def log(self):
-        return str(self.val)
+        return str(self.val)+";"+str(self.mm)
 
     def etat( self, s ):
         self.dont_stop = s

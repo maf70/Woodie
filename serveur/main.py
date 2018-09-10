@@ -42,10 +42,11 @@ def get_data(log_file):
         data2_y_c1 = []
         data2_y_c2 = []
         data2_y_k = []
+        data2_y_kmm = []
         for line in lines:
             if line[0] != 'T' :
                 data = line.split(';')
-                if len(data) > 12:
+                if len(data) > 13:
                     data_x.append(data[0])
                     data_y_te.append(data[7])
                     data_y_t2.append(data[8])
@@ -57,8 +58,9 @@ def get_data(log_file):
                     data2_y_c1.append(data[5])
                     data2_y_c2.append(data[6])
                     data2_y_k.append(data[11])
+                    data2_y_kmm.append(data[12])
 
-    return data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k
+    return data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k, data2_y_kmm
 
 def isint(x):
     try:
@@ -112,8 +114,8 @@ def graph():
 
         list += lines
 
-        data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k = get_data(config.woodie_log_directory+log_file)
-        return render_template('graph.html', dt=datetime.now(), log_file=jour, errs=list, data_x=data_x, data_y_te=data_y_te, data_y_t2=data_y_t2, data_y_rV=data_y_rV, data_y_rM=data_y_rM, data_y_rI=data_y_rI, data2_y_c1=data2_y_c1, data2_y_c2=data2_y_c2, data2_y_k=data2_y_k)
+        data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k, data2_y_kmm = get_data(config.woodie_log_directory+log_file)
+        return render_template('graph.html', dt=datetime.now(), log_file=jour, errs=list, data_x=data_x, data_y_te=data_y_te, data_y_t2=data_y_t2, data_y_rV=data_y_rV, data_y_rM=data_y_rM, data_y_rI=data_y_rI, data2_y_c1=data2_y_c1, data2_y_c2=data2_y_c2, data2_y_k=data2_y_k, data2_y_kmm=data2_y_kmm )
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
         return render_template('error.html', error=str(e))
