@@ -312,6 +312,13 @@ class SpiSondeK(Thread):
             self.valide = 0
 
           if self.valide and val > 0 :
+
+            # Limit variation at a max of 50 degrees each second
+            if val > self.val + 50 :
+              val = self.val + 50
+            if val < self.val - 50 :
+              val = self.val - 50
+
             self.val = val
             self.lastT.append(val)
             l = len(self.lastT)
