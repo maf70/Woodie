@@ -10,6 +10,9 @@
         <header>
             <h1><a href="{{ url_for('index') }}">WOODIE</a></h1>
         </header>
+        <form method="post">
+          <input class="send_form" type="submit" value="Redemarrer Woodie">
+        </form>
         <h2><a href="{{ url_for('conf') }}">Configuration</a></h2>
         <h2>Logs :</h2>
         <form action="{{ url_for('graph') }}" method="post">

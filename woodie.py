@@ -17,6 +17,18 @@ woodie.start()
 while True:
   try :
     time.sleep(2)
+    if serv.redemarrage == 1:
+      serv.redemarrage = 0
+      woodie.etat(0)
+      print "Re-demarrage en cours ..."
+
+      woodie.join()
+      print "Chaudiere arretee"
+
+      woodie = ch.chaudiere ( "config.json" )
+      woodie.start()
+      print "Chaudiere redemarree"
+
 
 # ... jusqu'a interruption manuelle
   except KeyboardInterrupt:

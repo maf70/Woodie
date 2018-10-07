@@ -18,6 +18,8 @@ from collections import OrderedDict
 
 from threading import Thread
 
+redemarrage = 0
+
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
 
@@ -80,20 +82,28 @@ def isfloat(x):
     else:
         return True
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    global redemarrage
     try:
-        logs = fnmatch.filter(os.listdir(config.woodie_log_directory), '*.log')
-        logs.sort(reverse=True)
-        errs = fnmatch.filter(os.listdir(config.woodie_log_directory), '*.err')
-        errs.sort(reverse=True)
-        list = []
-        for f in errs :
-          sublist = []
-          sublist.append(f.split('.')[0])
-          with open(config.woodie_log_directory+f, "r") as lines:
-            sublist += lines
-          list.append(sublist)
+        if request.method == 'GET':
+          logs = fnmatch.filter(os.listdir(config.woodie_log_directory), '*.log')
+          logs.sort(reverse=True)
+          errs = fnmatch.filter(os.listdir(config.woodie_log_directory), '*.err')
+          errs.sort(reverse=True)
+          list = []
+          for f in errs :
+            sublist = []
+            sublist.append(f.split('.')[0])
+            with open(config.woodie_log_directory+f, "r") as lines:
+              sublist += lines
+            list.append(sublist)
+
+          return render_template('index.html', logs=logs, errs=list)
+
+        else:
+          redemarrage = 1
+          return render_template('reboot.html')
 
         return render_template('index.html', logs=logs, errs=list)
     except Exception as e:
