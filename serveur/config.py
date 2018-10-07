@@ -1,7 +1,7 @@
-woodie_base_path        = '../'
+woodie_base_path        = './'
 woodie_log_directory    = woodie_base_path+'LOGS/'
 woodie_config           = woodie_base_path+'config.json'
-log_level               = 'DEBUG'
+log_level               = 'INFO'
 log_format              = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 log_name                = 'woodie-server.log'
 log_max_size            = 1000000

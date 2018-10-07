@@ -16,6 +16,7 @@ import os
 import fnmatch
 from collections import OrderedDict
 
+from threading import Thread
 
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
@@ -148,6 +149,24 @@ def conf():
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
         return render_template('error.html', error=str(e))
+
+
+class WServeur(Thread):
+
+    """Thread : Manage serveur task"""
+
+    def __init__(self):
+        Thread.__init__(self)
+        self.dont_stop = 1
+
+    def run(self):
+        configure_logger()
+        app.run(host='0.0.0.0', port=config.http_port)
+        while self.dont_stop == 1 :
+          time.sleep(1)
+
+    def etat( self, s ):
+        self.dont_stop = s
 
 if __name__ == '__main__':
     configure_logger()

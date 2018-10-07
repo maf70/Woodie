@@ -3,6 +3,11 @@ import time
 import sys
 
 import chaudiere as ch
+import serveur.main as serv
+
+# Creation & demarrage du serveur http
+woodieS = serv.WServeur ()
+woodieS.start()
 
 # Creation & demarrage de la chaudiere !
 woodie = ch.chaudiere ( "config.json" )
