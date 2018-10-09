@@ -31,7 +31,7 @@ class Traceur(Thread):
           if self.dt.newDateF() == 1:
             if f :
               f.close()
-            fichier = "LOGS/"+self.dt.date+".log"
+            fichier = "/mnt/data/LOGS/"+self.dt.date+".log"
             fe = os.path.isfile(fichier)
             f=open(fichier,"a")
 
@@ -57,6 +57,6 @@ class Traceur(Thread):
         self.dont_stop = s
 
 def logErreur( dt, erreur) :
-    f=open("LOGS/"+dt.date+".err","a")
+    f=open("/mnt/data/LOGS/"+dt.date+".err","a")
     f.write(dt.time+"\t"+erreur+"\n")
     f.close()

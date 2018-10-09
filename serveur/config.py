@@ -1,9 +1,9 @@
 woodie_base_path        = './'
-woodie_log_directory    = woodie_base_path+'LOGS/'
+woodie_log_directory    = '/mnt/data/LOGS/'
 woodie_config           = woodie_base_path+'config.json'
 log_level               = 'INFO'
 log_format              = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-log_name                = 'woodie-server.log'
+log_name                = '/mnt/data/LOGS/woodie-server.logs'
 log_max_size            = 1000000
 log_backup_count        = 5
 http_port               = 8081
