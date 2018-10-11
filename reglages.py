@@ -4,57 +4,7 @@ import json
 
 
 ################################
-#  Reglages de fonctionnement
 ################################
-
-class Params():
-
-    """Recuperation / sauvegarde parametres """
-
-    def __init__(self, fichier = "defaut.json"):
-      self.fichier = fichier
-
-      self.etat = ""
-
-      try :
-        conf=json.load(open(fichier))
-
-      except IOError:
-        self.etat = "E:ConfFile"
-
-      else :
-        try :
-          # Temperature demarrage / arret cycle de chauffe
-          self.tStart = conf["tStart"]["valeur"]
-          self.tStop  = conf["tStop"]["valeur"]
-
-          # Temperature vis securite
-          self.tSecu  = conf["tSecu"]["valeur"]
-
-          # Temperature vis securite
-          self.dChauffe   = conf["dChauffe"]["valeur"]
-          self.tMinFoyer  = conf["tMinFoyer"]["valeur"]
-
-          # Duree d'un cycle en seconde
-          self.dCycle   = conf["dCycle"]["valeur"]
-          self.dVentilo = conf["dVentilo"]["valeur"]
-          self.dMoteur  = conf["dMoteur"]["valeur"]
-
-          # Parametres moteur
-          self.cycleMoteur = conf["cycleMoteur"]["valeur"]
-          self.vMinVis     = conf["vMinVis"]["valeur"]
-          self.vMinTremie  = conf["vMinTremie"]["valeur"]
-          self.dInverse    = conf["dInverse"]["valeur"]
-          self.nInverse    = conf["nInverse"]["valeur"]
-          self.dDecalage   = conf["dDecalage"]["valeur"]
-
-          # Specifique
-          self.sondeTempEau = conf["sondeTempEau"]["valeur"]
-          self.sondeTempMot = conf["sondeTempMot"]["valeur"]
-
-        except KeyError:
-          self.etat = "E:ConfErr"
-
 
 
 ################################

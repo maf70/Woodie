@@ -12,19 +12,24 @@ import logic
 import controleurs
 import traceur as trace
 
+import json
 
 class chaudiere(Thread):
 
     """Chaudiere """
 
-    def __init__(self, fichier_param = "defaut.txt"):
+    def __init__(self, fichier_param = "config.json"):
         Thread.__init__(self)
 
-        self.r = reglages.Params (fichier_param)
+        self.phase = "not set"
 
-        if self.r.etat != "" :
-          # Parse error
-          afficheurU = hw.AfficheurUnique(self.r.etat)
+        # Lecture fichier config
+        try :
+          self.conf=json.load(open(fichier_param))
+
+        except IOError:
+          self.setPhase("E:ConfFile")
+          afficheurU = hw.AfficheurUnique(self.phase)
           # On ne sort pas ...
           while 1:
             time.sleep(3)
@@ -38,15 +43,15 @@ class chaudiere(Thread):
         self.reserve  = hw.Sortie(" ", reglages.r4)
 
         self.listeCapteurs = []
-        self.capteurVis  = hw.Compteur("C1", reglages.b1, self.r.vMinVis, 10)
-        if self.r.vMinVis > 0 :
+        self.capteurVis  = hw.Compteur("C1", reglages.b1, self.config( "vMinVis" ), 10)
+        if self.config( "vMinVis" ) > 0 :
           self.listeCapteurs.append(self.capteurVis)
-        self.capteurTremie = hw.Compteur("C2", reglages.b2, self.r.vMinTremie, 10)
-        if self.r.vMinTremie > 0 :
+        self.capteurTremie = hw.Compteur("C2", reglages.b2, self.config( "vMinTremie" ), 10)
+        if self.config( "vMinTremie" ) > 0 :
           self.listeCapteurs.append(self.capteurTremie)
 
-        self.t_eau = hw.Thermo("Te", self.r.sondeTempEau)
-        self.t_secu = hw.Thermo("Ts", self.r.sondeTempMot)
+        self.t_eau = hw.Thermo("Te", self.config( "sondeTempEau" ))
+        self.t_secu = hw.Thermo("Ts", self.config( "sondeTempMot" ))
         self.dallasManager = hw.DallasManager( [ [self.t_eau, 3 ], [self.t_secu, 3 ] ] )
 
 
@@ -60,7 +65,9 @@ class chaudiere(Thread):
 
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
         self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, self.listeCapteurs ,
-                          self.inverse, 0.5, self.r.dInverse, self.r.nInverse, self.r.dDecalage)
+                          self.inverse, 0.5,
+                          self.config( "dInverse" ), self.config( "nInverse" ),
+                          self.config( "dDecalage" ))
 
         self.ledError = hw.Led(reglages.l1)
         self.poussoirReprise = hw.Entree("Pr",reglages.p2,200)
@@ -111,7 +118,6 @@ class chaudiere(Thread):
         self.dont_stop = 1
         self.halt = 0
         self.modif = 1
-        self.phase = "not set"
         self.label = "Woodie"
 
     def run(self):
@@ -148,7 +154,8 @@ class chaudiere(Thread):
 
         while self.dont_stop == 1 :
 
-              if self.r.tMinFoyer != 0 and ventilo_etat == 1 and t > self.r.dChauffe and self.r.tMinFoyer > self.sondeK.valeur() :
+              if self.config( "tMinFoyer" ) != 0 and ventilo_etat == 1 and t > self.config( "dChauffe" ) and \
+                 self.config( "tMinFoyer" ) > self.sondeK.valeur() :
                 anomalie_foyer = 1
 
               # Controle temperature moteur / coupure secteur / ...
@@ -158,7 +165,7 @@ class chaudiere(Thread):
               elif self.t_secu.valide != 1 :
                 self.setPhase("E:Capt M")
                 anomalie = 2
-              elif self.t_secu.temperature >= self.r.tSecu:
+              elif self.t_secu.temperature >= self.config( "tSecu" ) :
                 self.setPhase("E:Secu")
                 anomalie = 3
               elif self.d_secteur.valeur() == 0:
@@ -214,7 +221,7 @@ class chaudiere(Thread):
                   # Fin de cycle et tentative reprise
                   anomalie_foyer = 0
                   ventilo_etat = moteur_etat = 0
-                  t = self.r.dCycle
+                  t = self.config( "dCycle" )
 
               # Sinon cycle normal
               else :
@@ -224,21 +231,21 @@ class chaudiere(Thread):
                 self.ctrlMoteur.pause(0)
 
                 # Si Repos et temperature seuil bas, redemarrage cycle de chauffe
-                if ventilo_etat == 0 and moteur_etat == 0 and self.t_eau.temperature <= self.r.tStart:
+                if ventilo_etat == 0 and moteur_etat == 0 and self.t_eau.temperature <= self.config( "tStart" ):
                   ventilo_etat = moteur_etat = 1
                   self.setPhase("Chauffe")
                   t=0
 
                 # Debut de cycle : test temperature et demarrage si besoin
                 if t==0 :
-                  if ventilo_etat > 0 : self.ctrlVentilo.demarre(self.r.dVentilo)
-                  if moteur_etat  > 0 : self.ctrlMoteur.demarre(self.r.dMoteur)
+                  if ventilo_etat > 0 : self.ctrlVentilo.demarre(self.config( "dVentilo" ))
+                  if moteur_etat  > 0 : self.ctrlMoteur.demarre(self.config( "dMoteur" ))
 
                 t += 1
 
                 # Fin de cycle : test temperature et arret si besoin
-                if t >= self.r.dCycle :
-                  if ventilo_etat == 1 and self.t_eau.temperature >= self.r.tStop:
+                if t >= self.config( "dCycle" ) :
+                  if ventilo_etat == 1 and self.t_eau.temperature >= self.config( "tStop" ):
 # Decommenter si besoin dernier cycle sans ventilo
 #                    ventilo_etat = 0
 #                    self.setPhase("Fin ch.")
@@ -300,6 +307,9 @@ class chaudiere(Thread):
 
     def affiche(self):
         return self.phase
+
+    def config(self, cle):
+        return self.conf[cle]["valeur"]
 
     def log(self):
         return self.phase
