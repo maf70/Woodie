@@ -101,7 +101,10 @@ def index():
             sublist.insert(0,f.split('.')[0])
             list.append(sublist)
 
-          return render_template('index.html', logs=logs, errs=list)
+          fs_info = os.statvfs(config.woodie_log_directory)
+          fs = str((fs_info.f_bsize * fs_info.f_bfree) / (1024*1024)) + " Mo"
+
+          return render_template('index.html', fs=fs, logs=logs, errs=list)
 
         else:
           redemarrage = 1
