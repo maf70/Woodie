@@ -51,6 +51,9 @@ l1 = 26
 
 # Configuration gpio poussoir
 # !! Numerotation Broadcom !!
+p5 = 17
+p4 = 27
+p3 = 22
 p2 = 8
 p1 = 7
 

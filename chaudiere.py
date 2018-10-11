@@ -70,8 +70,9 @@ class chaudiere(Thread):
                           self.config( "dDecalage" ))
 
         self.ledError = hw.Led(reglages.l1)
+        self.poussoirWifi= hw.Entree("Pw",reglages.p3,200)
         self.poussoirReprise = hw.Entree("Pr",reglages.p2,200)
-        self.poussoirHalt = hw.Entree("Pr",reglages.p1,200)
+        self.poussoirHalt = hw.Entree("Ph",reglages.p1,200)
 
         self.ecran    = hw.Afficheur( [ "T   Ct", "", "", "" ], [
           # [ object , colonne , ligne, longueur ],
@@ -89,6 +90,7 @@ class chaudiere(Thread):
           [ self.d_secuMeca , 19, 3, 1 ],
           [ self.poussoirReprise, 12, 3, 1 ],
           [ self.poussoirHalt, 11, 3, 1 ],
+          [ self.poussoirWifi, 10, 3, 1 ],
           [ self , 9, 1, 11 ],
           [ self.stats , 9, 2, 11 ],
           [ self.sondeK, 0, 3, 4 ]
@@ -119,6 +121,8 @@ class chaudiere(Thread):
         self.halt = 0
         self.modif = 1
         self.label = "Woodie"
+        self.wifi = 0
+        os.system("systemctl stop hostapd")
 
     def run(self):
 
@@ -207,6 +211,18 @@ class chaudiere(Thread):
               self.halt = self.poussoirHalt.valeur()
               if self.halt == 1 :
                 self.dont_stop = 0
+
+              if self.poussoirWifi.valeur() == 1 :
+                self.wifi = 600
+                os.system("systemctl start hostapd")
+                self.logMessage("I:AP on")
+
+              # Check wifi timeout
+              if self.wifi > 0 :
+                self.wifi -= 1
+                if self.wifi == 0 :
+                  os.system("systemctl stop hostapd")
+                  self.logMessage("I:AP off")
 
               # Si anomalie, on arrete tout :
               if anomalie != 0:
