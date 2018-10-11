@@ -94,9 +94,11 @@ def index():
           list = []
           for f in errs :
             sublist = []
-            sublist.append(f.split('.')[0])
             with open(config.woodie_log_directory+f, "r") as lines:
-              sublist += lines
+              for line in lines :
+                sublist.append(line)
+            sublist.reverse()
+            sublist.insert(0,f.split('.')[0])
             list.append(sublist)
 
           return render_template('index.html', logs=logs, errs=list)
@@ -119,11 +121,12 @@ def graph():
         list = []
         try :
           lines = open(config.woodie_log_directory+jour+".err", "r")
+          for line in lines :
+            list.append(line)
+          list.reverse()
 
         except :
           lines = []
-
-        list += lines
 
         data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k, data2_y_kmm = get_data(config.woodie_log_directory+log_file)
         return render_template('graph.html', dt=datetime.now(), log_file=jour, errs=list, data_x=data_x, data_y_te=data_y_te, data_y_t2=data_y_t2, data_y_rV=data_y_rV, data_y_rM=data_y_rM, data_y_rI=data_y_rI, data2_y_c1=data2_y_c1, data2_y_c2=data2_y_c2, data2_y_k=data2_y_k, data2_y_kmm=data2_y_kmm )
