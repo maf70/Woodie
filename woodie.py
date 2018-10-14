@@ -382,7 +382,7 @@ if __name__ == '__main__':
   woodie = chaudiere ( "config.json" )
 
   # Creation & demarrage du serveur http
-  woodieS = serv.Serveur ( woodie.graphList )
+  woodieS = serv.Serveur ( woodie.graphList, "WOODIE" )
   woodieS.start()
 
   # Creation & demarrage de la chaudiere !

@@ -20,6 +20,7 @@ from threading import Thread
 
 redemarrage = 0
 gl = []
+titre = "Test serveur"
 
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
@@ -133,15 +134,15 @@ def index():
           fs_info = os.statvfs(config.woodie_log_directory)
           fs = str((fs_info.f_bsize * fs_info.f_bfree) / (1024*1024)) + " Mo"
 
-          return render_template('index.html', fs=fs, logs=logs, errs=list)
+          return render_template('index.html', titre=titre, fs=fs, logs=logs, errs=list)
 
         else:
           redemarrage = 1
-          return render_template('reboot.html')
+          return render_template('reboot.html', titre=titre)
 
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
-        return render_template('error.html', error=str(e))
+        return render_template('error.html', titre=titre, error=str(e))
 
 
 @app.route('/graph', methods=['POST'])
@@ -163,11 +164,11 @@ def graph():
         for g in gl:
           g = get_data(config.woodie_log_directory+log_file, g)
           g.x.label = jour
-        return render_template('graph2.html', dt=datetime.now(), log_file=jour, errs=list, gl=gl )
+        return render_template('graph2.html', titre=titre, dt=datetime.now(), log_file=jour, errs=list, gl=gl )
 
     except Exception as e:
         LOGGER.error("error in graph(): "+str(e))
-        return render_template('error.html', error=str(e))
+        return render_template('error.html', titre=titre, error=str(e))
 
 
 @app.route('/conf', methods=['GET', 'POST'])
@@ -177,7 +178,7 @@ def conf():
             jsonFile = open(config.woodie_config, "r")
             conf = json.load(jsonFile, object_pairs_hook=OrderedDict)
             jsonFile.close()
-            return render_template('conf.html', conf=conf)
+            return render_template('conf.html', titre=titre, conf=conf)
         else:
             jsonFile = open(config.woodie_config, "r")
             conf = json.load(jsonFile, object_pairs_hook=OrderedDict)
@@ -196,18 +197,20 @@ def conf():
             return redirect(url_for('conf'))
     except Exception as e:
         LOGGER.error("error in conf(): "+str(e))
-        return render_template('error.html', error=str(e))
+        return render_template('error.html', titre=titre, error=str(e))
 
 
 class Serveur(Thread):
 
     """Thread : Manage serveur task"""
 
-    def __init__(self, graphList):
+    def __init__(self, graphList, label):
         global gl
+        global titre
         Thread.__init__(self)
         self.dont_stop = 1
         gl = graphList
+        titre = label
 
     def run(self):
         configure_logger()

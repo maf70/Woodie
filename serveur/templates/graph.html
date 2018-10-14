@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-    <title>Graphs Woodie</title>
+    <title>Graphs {{ titre }}</title>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <head>
@@ -9,9 +9,9 @@
     </head>
     <body>
         <header>
-            <h1><a href="{{ url_for('index') }}">WOODIE</a></h1>
+            <h1><a href="{{ url_for('index') }}">{{ titre }}</a></h1>
         </header>
-        <title>WOODIE</title>
+        <title>{{ titre }}</title>
         <h2>{{dt}}</h2>
       {% for g in gl %}
         <h3>{{g.titre}}</h3>
