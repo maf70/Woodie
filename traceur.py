@@ -39,6 +39,7 @@ class Traceur(Thread):
               for el in self.devices_list :
                 f.write(el.label+";")
               f.write("\n")
+            f.write("\n")
 
           for el in self.devices_list :
             f.write(el.log()+";")
