@@ -23,6 +23,45 @@ redemarrage = 0
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
 
+
+
+class axe :
+
+    """Classe axe : Description d'un axe"""
+
+    def __init__(self, type, label, colNom):
+        self.type = type
+        self.label = label
+        self.colNom = colNom
+        self.col = 0
+        self.pts = []
+
+class courbe :
+
+    """Classe courbe : Description d'une courbe"""
+
+    def __init__(self, nom, colNom, axe, offset):
+        self.nom = nom
+        self.colNom = colNom
+        self.col = 0
+        self.axe = axe
+        self.offset = offset
+        self.pts = []
+
+class graphe :
+
+    """Classe graphe : Description complete d'un graphe"""
+
+    def __init__(self, titre, x, y1, y2, courbes):
+        self.titre = titre
+        self.x = x
+        self.y1 = y1
+        self.y2 = y2
+        self.courbes = courbes
+
+
+
+
 def configure_logger():
     logging.basicConfig(level=config.log_level, format=config.log_format)
     handler = logging.handlers.RotatingFileHandler(config.log_name, maxBytes=config.log_max_size, backupCount=config.log_backup_count)
@@ -34,36 +73,25 @@ def configure_logger():
 LOGGER = logging.getLogger(__name__)
 
 
-def get_data(log_file):
+def get_data(log_file, gr):
     with open(log_file, "r") as lines:
-        data_x = []
-        data_y_te = []
-        data_y_t2 = []
-        data_y_rV = []
-        data_y_rM = []
-        data_y_rI = []
-        data2_y_c1 = []
-        data2_y_c2 = []
-        data2_y_k = []
-        data2_y_kmm = []
+        gr.x.pts = []
+        for c in gr.courbes:
+          c.pts = []
         for line in lines:
+            data = line.split(';')
             if line[0] != 'T' :
-                data = line.split(';')
                 if len(data) > 13:
-                    data_x.append(data[0])
-                    data_y_te.append(data[7])
-                    data_y_t2.append(data[8])
-                    data_y_rV.append(data[1])
-#                    data_y_rM.append(data[2])
-#                    data_y_rI.append(data[3])
-                    data_y_rM.append(int(data[2])+1.2)
-                    data_y_rI.append(int(data[3])+2.4)
-                    data2_y_c1.append(data[5])
-                    data2_y_c2.append(data[6])
-                    data2_y_k.append(data[11])
-                    data2_y_kmm.append(data[12])
+                    gr.x.pts.append(data[gr.x.col])
+                    for c in gr.courbes:
+#                      c.pts.append(int(data[c.col])+c.offset)
+                      c.pts.append(data[c.col])
+            else:
+              for c in gr.courbes:
+                c.col = data.index(c.colNom)
+              gr.x.col = data.index(gr.x.colNom)
 
-    return data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k, data2_y_kmm
+    return gr
 
 def isint(x):
     try:
@@ -110,7 +138,6 @@ def index():
           redemarrage = 1
           return render_template('reboot.html')
 
-        return render_template('index.html', logs=logs, errs=list)
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
         return render_template('error.html', error=str(e))
@@ -118,6 +145,30 @@ def index():
 
 @app.route('/graph', methods=['POST'])
 def graph():
+    ax = axe ( 0, "", 'Time')
+    ay1 = axe ( 1, "Temperature", 0)
+    ay2 = axe ( 2, "Relais", 0)
+    ct = courbe ( "Temperature eau", 'Te', 'y1' ,0)
+    ct2 = courbe ( "Temperature moteur", 'Ts', 'y1' ,0)
+    r1 = courbe ( "Ventilateur", 'V', 'y2' ,0)
+    r2 = courbe ( "Moteur", 'M', 'y2' , 1.2)
+    r3 = courbe ( "Moteur", 'I', 'y2' , 2.4)
+    g1 = graphe("Temperature et relais", ax, ay1, ay2, [ct, ct2, r1, r2, r3])
+
+    ay1_2 = axe ( 1, "Capteurs optique", 0)
+    ay2_2 = axe ( 2, "Sonde K", 0)
+    cv = courbe ( "Vis", 'C2', 'y1' ,0)
+    ctr = courbe ( "Tremie", 'C1', 'y1' ,0)
+    ck = courbe ( "Sonde K", 'K', 'y2' ,0)
+    ckm = courbe ( "Sonde K mm", 'Kmm5', 'y2' ,0)
+    g2 = graphe("Compteurs et Sonde K", ax, ay1_2, ay2_2, [cv, ctr, ck, ckm])
+
+    ay1_3 = axe ( 1, "On / Off", 0)
+    Ds = courbe ( "Secteur", 'Ds', 'y1' ,0)
+    Dm = courbe ( "Mecanique", 'Dm', 'y1' ,0)
+    g3 = graphe("Detecteur 220v", ax, ay1_3, '', [Ds, Dm])
+
+    gl = [g1, g2, g3]
     try:
         log_file = request.form['log_radio']
         jour = log_file.split('.')[0]
@@ -131,8 +182,11 @@ def graph():
         except :
           lines = []
 
-        data_x, data_y_te, data_y_t2, data_y_rV, data_y_rM, data_y_rI, data2_y_c1, data2_y_c2, data2_y_k, data2_y_kmm = get_data(config.woodie_log_directory+log_file)
-        return render_template('graph.html', dt=datetime.now(), log_file=jour, errs=list, data_x=data_x, data_y_te=data_y_te, data_y_t2=data_y_t2, data_y_rV=data_y_rV, data_y_rM=data_y_rM, data_y_rI=data_y_rI, data2_y_c1=data2_y_c1, data2_y_c2=data2_y_c2, data2_y_k=data2_y_k, data2_y_kmm=data2_y_kmm )
+        for g in gl:
+          g = get_data(config.woodie_log_directory+log_file, g)
+          g.x.label = jour
+        return render_template('graph2.html', dt=datetime.now(), log_file=jour, errs=list, gl=gl )
+
     except Exception as e:
         LOGGER.error("error in index(): "+str(e))
         return render_template('error.html', error=str(e))

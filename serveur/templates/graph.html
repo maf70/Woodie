@@ -13,10 +13,10 @@
         </header>
         <title>WOODIE</title>
         <h2>{{dt}}</h2>
-        <h3>TEMPERATURE & RELAIS</h3>
-        <div id='Fonctionnement' ></div>
-        <h3>CAPTEURS ROTATION & SONDE K</h3>
-        <div id='Analyse' ></div>
+      {% for g in gl %}
+        <h3>{{g.titre}}</h3>
+        <div id='{{g.titre}}' ></div>
+      {% endfor %}
         <h3>EVENEMENT(S) :</h3>
         {% for e in errs %}
            {% if loop.length == 0 %}
@@ -28,12 +28,14 @@
 
     </body>
     <script>
+      {% for g in gl %}
         data = [
+          {% for c in g.courbes %}
             {
-                x: {{ data_x|safe }},
-                y: {{ data_y_te|safe }},
-                name: 'Temperature eau',
-                yaxis: 'y1',
+                x: {{ g.x.pts|safe }},
+                y: {{ c.pts|safe }},
+                name: '{{ c.nom }}',
+                yaxis: '{{ c.axe }}',
                 offset: '100',
                 type: 'scatter',
                 line: {
@@ -41,53 +43,11 @@
                 }
 
             },
-            {
-                x: {{ data_x|safe }},
-                y: {{ data_y_t2|safe }},
-                name: 'Temperature 2',
-                yaxis: 'y1',
-                type: 'scatter',
-                line: {
-                    shape: 'hvh'
-                }
-            },
-            {
-                x: {{ data_x|safe }},
-                y: {{ data_y_rV|safe }},
-                name: 'Ventilateur',
-                yaxis: 'y2',
-                type: 'scatter',
-                line: {
-                    shape: 'hvh'
-                }
-            },
-            {
-                x: {{ data_x|safe }},
-                y: {{ data_y_rM|safe }},
-                name: 'Moteur',
-                yaxis: 'y2',
-                type: 'scatter',
-                line: {
-                    shape: 'hvh'
-                }
-
-            },
-            {
-                x: {{ data_x|safe }},
-                y: {{ data_y_rI|safe }},
-                name: 'Inversion moteur',
-                yaxis: 'y2',
-                type: 'scatter',
-                line: {
-                    shape: 'hvh'
-                }
-
-            }
-
+          {% endfor %}
         ];
         var layout = {
             xaxis: {
-                title: '{{log_file}}',
+                title: '{{g.x.label}}',
                 titlefont: {
                     family: 'Arial, sans-serif',
                     size: 18,
@@ -102,7 +62,7 @@
                 }
             },
             yaxis: {
-                title: 'TEMPERATURES',
+                title: '{{ g.y1.label }}',
                 titlefont: {
                     family: 'Arial, sans-serif',
                     size: 18,
@@ -116,8 +76,9 @@
                 },
                 rangemode: 'tozero'
             },
+          {% if g.ay2 != '' %}
             yaxis2: {
-                title: 'RELAIS',
+                title: '{{ g.y2.label }}',
                 side: 'right',
                 overlaying: 'y',
                 titlefont: {
@@ -131,105 +92,12 @@
                     size: 14,
                     color: 'black'
                 },
-                range: [0, 4],
-                autorange: false
             }
+          {% endif %}
         };
-        Plotly.plot('Fonctionnement', data, layout);
+        Plotly.plot('{{g.titre}}', data, layout);
 
-        data2 = [
-            {
-                x: {{ data_x|safe }},
-                y: {{ data2_y_c1|safe }},
-                name: 'Capteur moteur',
-                yaxis: 'y1',
-                offset: '100',
-                type: 'scatter',
-                line: {
-                    shape: 'hvh'
-                }
-
-            },
-            {
-                x: {{ data_x|safe }},
-                y: {{ data2_y_c2|safe }},
-                name: 'Capteur tremie',
-                yaxis: 'y1',
-                type: 'scatter',
-                line: {
-                    shape: 'hvh'
-                }
-            },
-            {
-                x: {{ data_x|safe }},
-                y: {{ data2_y_k|safe }},
-                name: 'Sonde K',
-                yaxis: 'y2',
-                type: 'scatter',
-                line: {
-                    shape: 'hvh'
-                }
-
-            },
-            {
-                x: {{ data_x|safe }},
-                y: {{ data2_y_kmm|safe }},
-                name: 'Sonde K moy',
-                yaxis: 'y2',
-                type: 'scatter',
-                line: {
-                    shape: 'hvh'
-                }
-            }
-        ];
-        var layout2 = {
-            xaxis: {
-                title: '{{log_file}}',
-                titlefont: {
-                    family: 'Arial, sans-serif',
-                    size: 18,
-                    color: 'black'
-                },
-                showticklabels: false,
-                tickangle: 70,
-                tickfont: {
-                    family: 'Old Standard TT, serif',
-                    size: 11,
-                    color: 'black'
-                }
-            },
-            yaxis: {
-                title: 'IMPULSIONS / 0.5 S',
-                titlefont: {
-                    family: 'Arial, sans-serif',
-                    size: 18,
-                    color: 'black'
-                },
-                showticklabels: true,
-                tickfont: {
-                    family: 'Old Standard TT, serif',
-                    size: 14,
-                    color: 'black'
-                }
-            },
-            yaxis2: {
-                title: 'TEMPERATURE',
-                side: 'right',
-                overlaying: 'y',
-                titlefont: {
-                    family: 'Arial, sans-serif',
-                    size: 18,
-                    color: 'black'
-                },
-                showticklabels: true,
-                tickfont: {
-                    family: 'Old Standard TT, serif',
-                    size: 14,
-                    color: 'black'
-                }
-            }
-        };
-        Plotly.plot('Analyse', data2, layout2);
+        {% endfor %}
     </script>
 </html>
 
