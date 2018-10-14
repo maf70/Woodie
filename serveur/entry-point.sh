@@ -10,4 +10,4 @@ if [ $? -eq 1 ]
         echo "Flask already installed!"
 fi
 
-sudo /usr/bin/python2 main.py
+sudo /usr/bin/python2 serveur.py

@@ -3,7 +3,7 @@ import time
 import sys
 
 import chaudiere as ch
-import serveur.main as serv
+import serveur.serveur as serv
 
 # Creation & demarrage du serveur http
 woodieS = serv.WServeur ()
