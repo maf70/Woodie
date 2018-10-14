@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import time
 import os
+import sys
 
 from threading import Thread
 
@@ -11,6 +12,7 @@ import hw
 import logic
 import controleurs
 import traceur as trace
+import serveur.serveur as serv
 
 import json
 
@@ -116,6 +118,32 @@ class chaudiere(Thread):
           self,
           self.stats
           ])
+
+        # Define below the graphics list in html serveur
+        ax = serv.axe ( 0, "", 'Time')
+        ay1 = serv.axe ( 1, "Temperature", 0)
+        ay2 = serv.axe ( 2, "Relais", 0)
+        t1 = serv.courbe ( "Temperature eau", 'Te', 'y1' ,0)
+        t2 = serv.courbe ( "Temperature moteur", 'Ts', 'y1' ,0)
+        r1 = serv.courbe ( "Ventilateur", 'V', 'y2' ,0)
+        r2 = serv.courbe ( "Moteur", 'M', 'y2' , 1.2)
+        r3 = serv.courbe ( "Moteur", 'I', 'y2' , 2.4)
+        g1 = serv.graphe("Temperature et relais", ax, ay1, ay2, [t1, t2, r1, r2, r3])
+
+        ay1_2 = serv.axe ( 1, "Capteurs optique", 0)
+        ay2_2 = serv.axe ( 2, "Sonde K", 0)
+        cv = serv.courbe ( "Vis", 'C2', 'y1' ,0)
+        ct = serv.courbe ( "Tremie", 'C1', 'y1' ,0)
+        ck = serv.courbe ( "Sonde K", 'K', 'y2' ,0)
+        ckm = serv.courbe ( "Sonde K mm", 'Kmm5', 'y2' ,0)
+        g2 = serv.graphe("Compteurs et Sonde K", ax, ay1_2, ay2_2, [cv, ct, ck, ckm])
+
+        ay1_3 = serv.axe ( 1, "On / Off", 0)
+        Ds = serv.courbe ( "Secteur", 'Ds', 'y1' ,0)
+        Dm = serv.courbe ( "Mecanique", 'Dm', 'y1' ,0)
+        g3 = serv.graphe("Detecteur 220v", ax, ay1_3, '', [Ds, Dm])
+
+        self.graphList = [g1, g2, g3]
 
         self.dont_stop = 1
         self.halt = 0
@@ -348,3 +376,47 @@ class chaudiere(Thread):
           trace.logErreur(self.dateur, p)
 
 
+if __name__ == '__main__':
+
+  # Creation & demarrage de la chaudiere !
+  woodie = chaudiere ( "config.json" )
+
+  # Creation & demarrage du serveur http
+  woodieS = serv.Serveur ( woodie.graphList )
+  woodieS.start()
+
+  # Creation & demarrage de la chaudiere !
+  woodie.start()
+
+  # On attend ...
+  while True:
+    try :
+      time.sleep(2)
+      if serv.redemarrage == 1:
+        serv.redemarrage = 0
+        woodie.etat(0)
+        print "Re-demarrage en cours ..."
+
+        woodie.join()
+        print "Chaudiere arretee"
+
+        woodie = chaudiere ( "config.json" )
+        woodie.start()
+        print "Chaudiere redemarree"
+
+
+  # ... jusqu'a interruption manuelle
+    except KeyboardInterrupt:
+
+      woodie.etat(0)
+      print ""
+      print "Arret en cours ..."
+
+      woodie.join()
+      print "Chaudiere arretee"
+
+      time.sleep(0.2)
+      break
+
+  print "Bye !"
+  exit()

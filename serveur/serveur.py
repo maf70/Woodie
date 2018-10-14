@@ -19,6 +19,7 @@ from collections import OrderedDict
 from threading import Thread
 
 redemarrage = 0
+gl = []
 
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
@@ -145,30 +146,7 @@ def index():
 
 @app.route('/graph', methods=['POST'])
 def graph():
-    ax = axe ( 0, "", 'Time')
-    ay1 = axe ( 1, "Temperature", 0)
-    ay2 = axe ( 2, "Relais", 0)
-    ct = courbe ( "Temperature eau", 'Te', 'y1' ,0)
-    ct2 = courbe ( "Temperature moteur", 'Ts', 'y1' ,0)
-    r1 = courbe ( "Ventilateur", 'V', 'y2' ,0)
-    r2 = courbe ( "Moteur", 'M', 'y2' , 1.2)
-    r3 = courbe ( "Moteur", 'I', 'y2' , 2.4)
-    g1 = graphe("Temperature et relais", ax, ay1, ay2, [ct, ct2, r1, r2, r3])
-
-    ay1_2 = axe ( 1, "Capteurs optique", 0)
-    ay2_2 = axe ( 2, "Sonde K", 0)
-    cv = courbe ( "Vis", 'C2', 'y1' ,0)
-    ctr = courbe ( "Tremie", 'C1', 'y1' ,0)
-    ck = courbe ( "Sonde K", 'K', 'y2' ,0)
-    ckm = courbe ( "Sonde K mm", 'Kmm5', 'y2' ,0)
-    g2 = graphe("Compteurs et Sonde K", ax, ay1_2, ay2_2, [cv, ctr, ck, ckm])
-
-    ay1_3 = axe ( 1, "On / Off", 0)
-    Ds = courbe ( "Secteur", 'Ds', 'y1' ,0)
-    Dm = courbe ( "Mecanique", 'Dm', 'y1' ,0)
-    g3 = graphe("Detecteur 220v", ax, ay1_3, '', [Ds, Dm])
-
-    gl = [g1, g2, g3]
+    global gl
     try:
         log_file = request.form['log_radio']
         jour = log_file.split('.')[0]
@@ -188,7 +166,7 @@ def graph():
         return render_template('graph2.html', dt=datetime.now(), log_file=jour, errs=list, gl=gl )
 
     except Exception as e:
-        LOGGER.error("error in index(): "+str(e))
+        LOGGER.error("error in graph(): "+str(e))
         return render_template('error.html', error=str(e))
 
 
@@ -217,17 +195,19 @@ def conf():
             jsonFile.close()
             return redirect(url_for('conf'))
     except Exception as e:
-        LOGGER.error("error in index(): "+str(e))
+        LOGGER.error("error in conf(): "+str(e))
         return render_template('error.html', error=str(e))
 
 
-class WServeur(Thread):
+class Serveur(Thread):
 
     """Thread : Manage serveur task"""
 
-    def __init__(self):
+    def __init__(self, graphList):
+        global gl
         Thread.__init__(self)
         self.dont_stop = 1
+        gl = graphList
 
     def run(self):
         configure_logger()
@@ -239,5 +219,13 @@ class WServeur(Thread):
         self.dont_stop = s
 
 if __name__ == '__main__':
+    ax = axe ( 0, "", 'Time')
+    ay1 = axe ( 1, "Temperature", 0)
+    ay2 = axe ( 2, "Relais", 0)
+    ct = courbe ( "Temperature eau", 'Te', 'y1' ,0)
+    r1 = courbe ( "Ventilateur", 'V', 'y2' ,0)
+    g1 = graphe("Temperature et relais", ax, ay1, ay2, [ct, r1])
+
     configure_logger()
+    gl = [g1]
     app.run(host='0.0.0.0', port=config.http_port)
