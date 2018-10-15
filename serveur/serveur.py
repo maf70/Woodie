@@ -204,13 +204,14 @@ class Serveur(Thread):
 
     """Thread : Manage serveur task"""
 
-    def __init__(self, graphList, label):
+    def __init__(self, source):
         global gl
         global titre
         Thread.__init__(self)
         self.dont_stop = 1
-        gl = graphList
-        titre = label
+        self.source = source
+        gl = source.graphList
+        titre = source.label
 
     def run(self):
         configure_logger()

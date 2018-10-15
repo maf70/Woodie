@@ -145,10 +145,11 @@ class chaudiere(Thread):
 
         self.graphList = [g1, g2, g3]
 
+        self.label = "WOODIE"
+
         self.dont_stop = 1
         self.halt = 0
         self.modif = 1
-        self.label = "Woodie"
         self.wifi = 0
         os.system("systemctl stop hostapd")
 
@@ -382,7 +383,7 @@ if __name__ == '__main__':
   woodie = chaudiere ( "config.json" )
 
   # Creation & demarrage du serveur http
-  woodieS = serv.Serveur ( woodie.graphList, "WOODIE" )
+  woodieS = serv.Serveur ( woodie )
   woodieS.start()
 
   # Creation & demarrage de la chaudiere !
@@ -402,6 +403,7 @@ if __name__ == '__main__':
 
         woodie = chaudiere ( "config.json" )
         woodie.start()
+        woodieS.source = woodie
         print "Chaudiere redemarree"
 
 
