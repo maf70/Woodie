@@ -6,11 +6,10 @@ import time
 
 class dateur(Thread):
 
-    """Classe affichage : track all devices change and display it when occurs"""
+    """Classe dateur : Manage date and time for LCD / Traceur"""
 
     def __init__(self):
         Thread.__init__(self)
-        self.label = "Time"
         self.modif = 0
         self.dont_stop = 1
         self.dateAffiche = ""
@@ -54,9 +53,8 @@ class stats(Thread):
 
     """Statistic module, typically average time for Repos/Chauffe phases"""
 
-    def __init__(self, label ):
+    def __init__(self ):
         Thread.__init__(self)
-        self.label = label
         self.on = 0
         self.valeur = 0
         self.modif = 0

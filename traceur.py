@@ -37,12 +37,12 @@ class Traceur(Thread):
 
             if fe == 0 :
               for el in self.devices_list :
-                f.write(el.label+";")
+                f.write(el[1]+";")
               f.write("\n")
             f.write("\n")
 
           for el in self.devices_list :
-            f.write(el.log()+";")
+            f.write(el[0].log()+";")
           f.write("\n")
          time.sleep(1)
 

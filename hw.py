@@ -63,11 +63,10 @@ class Thermo():
 
     """Thread : Read temperature """
 
-    def __init__(self, label, device):
+    def __init__(self, device):
         self.device = device
         self.temperature = -1
         self.modif = 0
-        self.label = label
         self.valide = 0
 
     def go(self):
@@ -97,8 +96,7 @@ class Entree():
 
     """Manage a GPIO as an input, and functions to check / display / log """
 
-    def __init__(self, label, port, rebond):
-        self.label = label
+    def __init__(self, port, rebond):
         self.port = port
         self.val = 2
         self.rebond = rebond
@@ -122,9 +120,8 @@ class Compteur(Thread):
 
     """Compteur : this object is a thread which count pulse from optical sensor"""
 
-    def __init__(self, label, port, vMin, rebond):
+    def __init__(self, port, vMin, rebond):
         Thread.__init__(self)
-        self.label = label
         self.port = port
         self.vMin = vMin
         self.nbBlock = 0
@@ -196,8 +193,7 @@ class Sortie():
     """Manage a GPIO as an output, and provide functions to check / display / log """
 
 
-    def __init__(self, label, port):
-        self.label = label
+    def __init__(self,  port):
         self.port = port
         self.etat = OFF
         self.modif = 0
@@ -244,9 +240,8 @@ class DetectSecteur(Thread):
 
     """Compteur : this object is a thread which count pulse from optical sensor"""
 
-    def __init__(self, label, port):
+    def __init__(self, port):
         Thread.__init__(self)
-        self.label = label
         self.port = port
         self.rebond = 500
         self.secteur = 0
@@ -287,9 +282,8 @@ class SpiSondeK(Thread):
 
     """Compteur : this object is a thread which access thermocouple sensor via software SPI"""
 
-    def __init__(self, label, CLK, CS, DO):
+    def __init__(self, CLK, CS, DO):
         Thread.__init__(self)
-        self.label = label+";Kmm5"
         self.CLK = CLK
         self.CS = CS
         self.DO = DO
@@ -353,8 +347,7 @@ class I2cAnalog():
 
     """Compteur : this object is a thread which count pulse from optical sensor"""
 
-    def __init__(self, label, address):
-        self.label = label
+    def __init__(self, address):
         self.address = address
         self.valeur = 0
         self.modif = 0

@@ -38,32 +38,32 @@ class chaudiere(Thread):
 
         self.dateur   = logic.dateur()
 
-        self.ventilo  = hw.Sortie("V", reglages.r1)
-        self.moteur   = hw.Sortie("M", reglages.r2)
-        self.inverse  = hw.Sortie("I", reglages.r3)
+        self.ventilo  = hw.Sortie( reglages.r1)
+        self.moteur   = hw.Sortie( reglages.r2)
+        self.inverse  = hw.Sortie( reglages.r3)
 # pas utilise, force la sortie a OFF
-        self.reserve  = hw.Sortie(" ", reglages.r4)
+        self.reserve  = hw.Sortie( reglages.r4)
 
         self.listeCapteurs = []
-        self.capteurVis  = hw.Compteur("C1", reglages.b1, self.config( "vMinVis" ), 10)
+        self.capteurVis  = hw.Compteur( reglages.b1, self.config( "vMinVis" ), 10)
         if self.config( "vMinVis" ) > 0 :
           self.listeCapteurs.append(self.capteurVis)
-        self.capteurTremie = hw.Compteur("C2", reglages.b2, self.config( "vMinTremie" ), 10)
+        self.capteurTremie = hw.Compteur( reglages.b2, self.config( "vMinTremie" ), 10)
         if self.config( "vMinTremie" ) > 0 :
           self.listeCapteurs.append(self.capteurTremie)
 
-        self.t_eau = hw.Thermo("Te", self.config( "sondeTempEau" ))
-        self.t_secu = hw.Thermo("Ts", self.config( "sondeTempMot" ))
+        self.t_eau = hw.Thermo( self.config( "sondeTempEau" ))
+        self.t_secu = hw.Thermo( self.config( "sondeTempMot" ))
         self.dallasManager = hw.DallasManager( [ [self.t_eau, 3 ], [self.t_secu, 3 ] ] )
 
 
-        self.d_secteur = hw.DetectSecteur("Ds", reglages.d1)
-        self.d_secuMeca = hw.DetectSecteur("Dm", reglages.d2)
+        self.d_secteur = hw.DetectSecteur( reglages.d1)
+        self.d_secuMeca = hw.DetectSecteur( reglages.d2)
 
-#        self.analog = hw.I2cAnalog("A0", reglages.i2cNano)
-        self.sondeK = hw.SpiSondeK("K", reglages.SpiCLK, reglages.SpiCS, reglages.SpiDO)
+#        self.analog = hw.I2cAnalog( reglages.i2cNano)
+        self.sondeK = hw.SpiSondeK( reglages.SpiCLK, reglages.SpiCS, reglages.SpiDO)
 
-        self.stats    = logic.stats( "Stats" )
+        self.stats    = logic.stats( )
 
         self.ctrlVentilo = controleurs.controleur(self.ventilo, 0.5, 0)
         self.ctrlMoteur = controleurs.controleurMoteur(self.moteur, self.listeCapteurs ,
@@ -72,9 +72,9 @@ class chaudiere(Thread):
                           self.config( "dDecalage" ))
 
         self.ledError = hw.Led(reglages.l1)
-        self.poussoirWifi= hw.Entree("Pw",reglages.p3,200)
-        self.poussoirReprise = hw.Entree("Pr",reglages.p2,200)
-        self.poussoirHalt = hw.Entree("Ph",reglages.p1,200)
+        self.poussoirWifi= hw.Entree( reglages.p3,200)
+        self.poussoirReprise = hw.Entree( reglages.p2,200)
+        self.poussoirHalt = hw.Entree( reglages.p1,200)
 
         self.ecran    = hw.Afficheur( [ "T   Ct", "", "", "" ], [
           # [ object , colonne , ligne, longueur ],
@@ -101,22 +101,22 @@ class chaudiere(Thread):
         self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ] ] )
 
         self.trace    = trace.Traceur( self.dateur, [
-          # [ object ],
-          self.dateur,
-          self.ventilo,
-          self.moteur,
-          self.inverse,
-          # self.reserve,
-          self.poussoirReprise,
-          self.capteurVis,
-          self.capteurTremie,
-          self.t_eau,
-          self.t_secu,
-          self.d_secteur,
-          self.d_secuMeca,
-          self.sondeK,
-          self,
-          self.stats
+          # [ object , label ],
+          [ self.dateur          , "Time" ],
+          [ self.ventilo         , "V" ],
+          [ self.moteur          , "M" ],
+          [ self.inverse         , "I" ],
+          # self.reserve , "" ],
+          [ self.poussoirReprise , "Pr" ],
+          [ self.capteurVis      , "C1" ],
+          [ self.capteurTremie   , "C2" ],
+          [ self.t_eau           , "Te" ],
+          [ self.t_secu          , "Ts" ],
+          [ self.d_secteur       , "Ds" ],
+          [ self.d_secuMeca      , "Dm" ],
+          [ self.sondeK          , "K;Kmm5" ],
+          [ self                 , "Etat" ],
+          [ self.stats           , "Stats" ],
           ])
 
         # Define below the graphics list in html serveur
