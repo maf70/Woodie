@@ -23,7 +23,8 @@ gl = []
 titre = "Test serveur"
 log_nbCol = 3
 log_check = 'T'
-lcd = [ [ ' ' * 16],  [ ' ' * 16] ]
+lcd = [ [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ],
+        [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ]  ]
 
 
 app                                         = Flask(__name__)
@@ -156,10 +157,6 @@ def lcd():
     global gl
     global lcd
 
-    mylcd = []
-    for el in lcd:
-        mylcd.append( "".join(el) )
-
     try:
         return render_template('lcd.html', titre=titre, lcd=lcd )
 
@@ -227,25 +224,29 @@ class Serveur(Thread):
     """Thread : Manage serveur task"""
 
     def __init__(self, source):
-        global gl
-        global titre
-        global log_nbCol
-        global log_check
-        global lcd
         Thread.__init__(self)
         self.dont_stop = 1
-        self.source = source
-        gl = source.graphList
-        titre = source.label
-        log_nbCol = source.trace.nbElem
-        log_check = source.trace.devices_list[0][1][0]
-        lcd = source.ecran.shadow
+        self.majSource( source )
 
     def run(self):
         configure_logger()
         app.run(host='0.0.0.0', port=config.http_port)
         while self.dont_stop == 1 :
           time.sleep(1)
+
+    def majSource( self, source ):
+        global gl
+        global titre
+        global log_nbCol
+        global log_check
+        global lcd
+
+        self.source = source
+        gl = source.graphList
+        titre = source.label
+        log_nbCol = source.trace.nbElem
+        log_check = source.trace.devices_list[0][1][0]
+        lcd = source.ecran.shadow
 
     def etat( self, s ):
         self.dont_stop = s

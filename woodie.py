@@ -403,7 +403,7 @@ if __name__ == '__main__':
 
         woodie = chaudiere ( "config.json" )
         woodie.start()
- #       woodieS.source = woodie
+        woodieS.majSource( woodie )
         print "Chaudiere redemarree"
 
 
