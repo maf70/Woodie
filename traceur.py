@@ -15,6 +15,7 @@ class Traceur(Thread):
         Thread.__init__(self)
         self.dt = dt
         self.devices_list = devices
+        self.nbElem = len(devices)
         self.dont_stop = 1
         self.active = 1
         self.activeReq = 1

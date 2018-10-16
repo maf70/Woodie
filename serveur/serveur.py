@@ -21,6 +21,8 @@ from threading import Thread
 redemarrage = 0
 gl = []
 titre = "Test serveur"
+log_nbCol = 3
+log_check = 'T'
 
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
@@ -76,14 +78,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_data(log_file, gr):
+    global log_nbCol
+    global log_check
     with open(log_file, "r") as lines:
         gr.x.pts = []
         for c in gr.courbes:
           c.pts = []
         for line in lines:
             data = line.split(';')
-            if line[0] != 'T' :
-                if len(data) > 13:
+            if line[0] != log_check :
+                if len(data) >= log_nbCol:
                     gr.x.pts.append(data[gr.x.col])
                     for c in gr.courbes:
 #                      c.pts.append(int(data[c.col])+c.offset)
@@ -207,11 +211,15 @@ class Serveur(Thread):
     def __init__(self, source):
         global gl
         global titre
+        global log_nbCol
+        global log_check
         Thread.__init__(self)
         self.dont_stop = 1
         self.source = source
         gl = source.graphList
         titre = source.label
+        log_nbCol = source.trace.nbElem
+        log_check = source.trace.devices_list[0][1][0]
 
     def run(self):
         configure_logger()
