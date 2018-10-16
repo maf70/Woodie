@@ -23,6 +23,8 @@ gl = []
 titre = "Test serveur"
 log_nbCol = 3
 log_check = 'T'
+lcd = [ [ ' ' * 16],  [ ' ' * 16] ]
+
 
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
@@ -149,6 +151,22 @@ def index():
         return render_template('error.html', titre=titre, error=str(e))
 
 
+@app.route('/lcd', methods=['GET'])
+def lcd():
+    global gl
+    global lcd
+
+    mylcd = []
+    for el in lcd:
+        mylcd.append( "".join(el) )
+
+    try:
+        return render_template('lcd.html', titre=titre, lcd=lcd )
+
+    except Exception as e:
+        LOGGER.error("error in lcd(): "+str(e))
+        return render_template('error.html', titre=titre, error=str(e))
+
 @app.route('/graph', methods=['POST'])
 def graph():
     global gl
@@ -168,7 +186,7 @@ def graph():
         for g in gl:
           g = get_data(config.woodie_log_directory+log_file, g)
           g.x.label = jour
-        return render_template('graph2.html', titre=titre, dt=datetime.now(), log_file=jour, errs=list, gl=gl )
+        return render_template('graph.html', titre=titre, dt=datetime.now(), log_file=jour, errs=list, gl=gl )
 
     except Exception as e:
         LOGGER.error("error in graph(): "+str(e))
@@ -213,6 +231,7 @@ class Serveur(Thread):
         global titre
         global log_nbCol
         global log_check
+        global lcd
         Thread.__init__(self)
         self.dont_stop = 1
         self.source = source
@@ -220,6 +239,7 @@ class Serveur(Thread):
         titre = source.label
         log_nbCol = source.trace.nbElem
         log_check = source.trace.devices_list[0][1][0]
+        lcd = source.ecran.shadow
 
     def run(self):
         configure_logger()

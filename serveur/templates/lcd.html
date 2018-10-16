@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <title>LCD</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <head>
+  <meta http-equiv="refresh" content="2">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <header>
+            <h1><a href="{{ url_for('index') }}">{{ titre }}</a></h1>
+        </header>
+        <h2>LCD:</h2>
+        <code>
+          <table>
+          {% for l in lcd %}
+            <tr>
+            {% for c in l %} <td>{{ c }}</td> {% endfor %}
+            </tr>
+          {% endfor %}
+          </table>
+        </code>
+
+    </body>
+</html>

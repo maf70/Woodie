@@ -25,11 +25,14 @@ class Afficheur():
 
     """Classe affichage : track all devices change and display it when occurs"""
 
-    def __init__(self, defaut, devices):
+    def __init__(self, c, l, defaut, devices):
         self.lcd = RPi_I2C_driver.lcd(i2cBus, r.i2cLCD)
         self.devices_list = devices
         self.defaut_list = defaut
         self.defaut = 0
+        self.ligne = l
+        self.col = c
+        self.shadow = defaut
         self.dont_stop = 1
 
     def go(self):
@@ -40,14 +43,24 @@ class Afficheur():
               self.lcd.lcd_display_string_pos(el,i,0)
               i += 1
             self.defaut = 1
+            i = 0
+            while i < self.ligne:
+              self.shadow[i] = list( self.defaut_list[i] + (self.col-len(self.shadow[i])) * " ")
+              i += 1
 
           for el in self.devices_list :
             if el[0].modif != 0 :
               el[0].modif = 0
               ch = el[0].affiche()
               l = el[3] - len(ch)
-              if l >= 0   : self.lcd.lcd_display_string_pos(ch+" "*l,el[2]+1,el[1])
-              elif l < 0  : self.lcd.lcd_display_string_pos("#"*el[3],el[2]+1,el[1])
+              if l >= 0   : txt=ch+" "*l
+              elif l < 0  : txt="#"*el[3]
+              self.lcd.lcd_display_string_pos(txt,el[2]+1,el[1])
+              i = 0
+              while i < len(txt):
+                self.shadow[el[2]][el[1]+i] = txt[i]
+                i += 1
+#          print self.shadow
 
 class AfficheurUnique():
 

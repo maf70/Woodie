@@ -1,7 +1,7 @@
 woodie_base_path        = './'
 woodie_log_directory    = '/mnt/data/LOGS/'
 woodie_config           = woodie_base_path+'config.json'
-log_level               = 'INFO'
+log_level               = 'ERROR'
 log_format              = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 log_name                = '/mnt/data/LOGS/woodie-server.logs'
 log_max_size            = 1000000

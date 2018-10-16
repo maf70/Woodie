@@ -16,6 +16,18 @@ h1 {
     font-size: 50px;
 }
 
+code {
+    font-family: FreeMono;
+    font-size: 20px;
+}
+
+table {
+    font-family: monospace;
+    font-size: 20px;
+    table-layout:fixed; width:300px;
+    border: 1px solid black;
+}
+
 .send_form {
     margin-top: 15px;
 }

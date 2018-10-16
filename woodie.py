@@ -76,7 +76,7 @@ class chaudiere(Thread):
         self.poussoirReprise = hw.Entree( reglages.p2,200)
         self.poussoirHalt = hw.Entree( reglages.p1,200)
 
-        self.ecran    = hw.Afficheur( [ "T   Ct", "", "", "" ], [
+        self.ecran    = hw.Afficheur( 20, 4, [ "T   Ct", "", "", "" ], [
           # [ object , colonne , ligne, longueur ],
           [ self.dateur  , 9, 0, 11 ],
           [ self.ventilo , 14, 3, 1 ],
@@ -403,7 +403,7 @@ if __name__ == '__main__':
 
         woodie = chaudiere ( "config.json" )
         woodie.start()
-        woodieS.source = woodie
+ #       woodieS.source = woodie
         print "Chaudiere redemarree"
 
 
