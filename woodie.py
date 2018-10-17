@@ -16,9 +16,9 @@ import serveur.serveur as serv
 
 import json
 
-class chaudiere(Thread):
+class woodie_legacy(Thread):
 
-    """Chaudiere """
+    """woodie_legacy : Chaudiere inside ! """
 
     def __init__(self, fichier_param = "config.json"):
         Thread.__init__(self)
@@ -380,14 +380,14 @@ class chaudiere(Thread):
 if __name__ == '__main__':
 
   # Creation & demarrage de la chaudiere !
-  woodie = chaudiere ( "config.json" )
+  woodie_instance = woodie_legacy ()
 
   # Creation & demarrage du serveur http
-  woodieS = serv.Serveur ( woodie )
-  woodieS.start()
+  http_serveur = serv.Serveur ( woodie_instance )
+  http_serveur.start()
 
-  # Creation & demarrage de la chaudiere !
-  woodie.start()
+  # Creation & demarrage de l'instance !
+  woodie_instance.start()
 
   # On attend ...
   while True:
@@ -395,26 +395,26 @@ if __name__ == '__main__':
       time.sleep(2)
       if serv.redemarrage == 1:
         serv.redemarrage = 0
-        woodie.etat(0)
+        woodie_instance.etat(0)
         print "Re-demarrage en cours ..."
 
-        woodie.join()
-        print "Chaudiere arretee"
+        woodie_instance.join()
+        print "Instance arretee"
 
-        woodie = chaudiere ( "config.json" )
-        woodie.start()
-        woodieS.majSource( woodie )
-        print "Chaudiere redemarree"
+        woodie_instance = woodie_legacy ()
+        woodie_instance.start()
+        http_serveur.majSource( woodie_instance )
+        print "Instance redemarree"
 
 
   # ... jusqu'a interruption manuelle
     except KeyboardInterrupt:
 
-      woodie.etat(0)
+      woodie_instance.etat(0)
       print ""
       print "Arret en cours ..."
 
-      woodie.join()
+      woodie_instance.join()
       print "Chaudiere arretee"
 
       time.sleep(0.2)
