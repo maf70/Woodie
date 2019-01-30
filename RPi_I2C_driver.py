@@ -98,6 +98,9 @@ class lcd:
    def __init__(self, bus, address):
       self.lcd_device = i2c_device(address, bus)
 
+      self.lcd_reinit()
+
+   def lcd_reinit(self):
       self.lcd_write(0x03)
       self.lcd_write(0x03)
       self.lcd_write(0x03)
