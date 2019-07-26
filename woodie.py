@@ -24,6 +24,7 @@ class woodie_legacy(Thread):
         Thread.__init__(self)
 
         self.phase = "not set"
+        self.fichier_param = fichier_param
 
         # Lecture fichier config
         try :

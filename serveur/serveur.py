@@ -26,7 +26,6 @@ log_check = 'T'
 lcd = [ [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ],
         [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ]  ]
 
-
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
 
@@ -247,6 +246,7 @@ class Serveur(Thread):
         log_nbCol = source.trace.nbElem
         log_check = source.trace.devices_list[0][1][0]
         lcd = source.ecran.shadow
+        config.woodie_config = config.woodie_base_path+source.fichier_param
 
     def etat( self, s ):
         self.dont_stop = s
