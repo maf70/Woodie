@@ -11,11 +11,14 @@ class Traceur(Thread):
 
     """Thread Traceur : Record all parameters each second"""
 
-    def __init__(self, dt, devices):
+    def __init__(self, dt, devices, periode="D", freq=1, repertoire="/mnt/data/LOGS/"):
         Thread.__init__(self)
         self.dt = dt
         self.devices_list = devices
         self.nbElem = len(devices)
+        self.periode = periode
+        self.freq = freq
+        self.rep = repertoire
         self.dont_stop = 1
         self.active = 1
         self.activeReq = 1
@@ -23,29 +26,45 @@ class Traceur(Thread):
     def run(self):
 
         f = 0
+        fichier = ""
+        compteur = 1
 
         while self.dont_stop == 1 :
-         if self.active == 1 or self.activeReq == 1:
-          self.active = self.activeReq
+          compteur -= 1
+          if compteur == 0 :
 
-          # Changement de fichier ?
-          if self.dt.newDateF() == 1:
-            if f :
-              f.close()
-            fichier = "/mnt/data/LOGS/"+self.dt.date+".log"
-            fe = os.path.isfile(fichier)
-            f=open(fichier,"a")
+            if self.active == 1 or self.activeReq == 1:
+              self.active = self.activeReq
 
-            if fe == 0 :
+              # Changement de fichier ?
+              if self.periode == "D" and self.dt.newDateF() == 1:
+                fichier = self.rep+self.dt.date+".log"
+              elif self.periode == "M" and self.dt.newMonthF() == 1:
+                fichier = self.rep+self.dt.YearMonth+".log"
+              elif self.periode == "Y" and self.dt.newYearF() == 1:
+                fichier = self.rep+self.dt.Year+".log"
+              elif self.periode == "A" and not f :
+                fichier = self.rep+"all.log"
+
+              if fichier != "" :
+                if f :
+                  f.close()
+                fe = os.path.isfile(fichier)
+                f=open(fichier,"a")
+                fichier = ""
+
+                if fe == 0 :
+                  for el in self.devices_list :
+                    f.write(el[1]+";")
+                  f.write("\n\n")
+
               for el in self.devices_list :
-                f.write(el[1]+";")
+                f.write(el[0]()+";")
               f.write("\n")
-            f.write("\n")
 
-          for el in self.devices_list :
-            f.write(el[0].log()+";")
-          f.write("\n")
-         time.sleep(1)
+              compteur = self.freq
+
+          time.sleep(1)
 
         f.close()
 
@@ -58,7 +77,7 @@ class Traceur(Thread):
     def etat( self, s ):
         self.dont_stop = s
 
-def logErreur( dt, erreur) :
-    f=open("/mnt/data/LOGS/"+dt.date+".err","a")
+def logErreur(dt, erreur, rep="/mnt/data/LOGS/") :
+    f=open(rep+dt.date+".err","a")
     f.write(dt.time+"\t"+erreur+"\n")
     f.close()

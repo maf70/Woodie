@@ -37,6 +37,8 @@ class woodie_legacy(Thread):
           while 1:
             time.sleep(3)
 
+        self.rep      = "/mnt/data/LOGS/WOODIE/"
+
         self.dateur   = logic.dateur()
 
         self.ventilo  = hw.Sortie( reglages.r1)
@@ -103,22 +105,26 @@ class woodie_legacy(Thread):
 
         self.trace    = trace.Traceur( self.dateur, [
           # [ object , label ],
-          [ self.dateur          , "Time" ],
-          [ self.ventilo         , "V" ],
-          [ self.moteur          , "M" ],
-          [ self.inverse         , "I" ],
-          # self.reserve , "" ],
-          [ self.poussoirReprise , "Pr" ],
-          [ self.capteurVis      , "C1" ],
-          [ self.capteurTremie   , "C2" ],
-          [ self.t_eau           , "Te" ],
-          [ self.t_secu          , "Ts" ],
-          [ self.d_secteur       , "Ds" ],
-          [ self.d_secuMeca      , "Dm" ],
-          [ self.sondeK          , "K;Kmm5" ],
-          [ self                 , "Etat" ],
-          [ self.stats           , "Stats" ],
-          ])
+          [ self.dateur.log_time     , "Time" ],
+          [ self.ventilo.log         , "V" ],
+          [ self.moteur.log          , "M" ],
+          [ self.inverse.log         , "I" ],
+          # self.reserve.log , "" ],
+          [ self.poussoirReprise.log , "Pr" ],
+          [ self.capteurVis.log      , "C1" ],
+          [ self.capteurTremie.log   , "C2" ],
+          [ self.t_eau.log           , "Te" ],
+          [ self.t_secu.log          , "Ts" ],
+          [ self.d_secteur.log       , "Ds" ],
+          [ self.d_secuMeca.log      , "Dm" ],
+          [ self.sondeK.log          , "K;Kmm5" ],
+          [ self.log                 , "Etat" ],
+          [ self.stats.log           , "Stats" ],
+          ],
+          "D",
+          1,
+          self.rep
+          )
 
         # Define below the graphics list in html serveur
         ax = serv.axe ( 0, "", 'Time')
@@ -366,7 +372,7 @@ class woodie_legacy(Thread):
           self.modif = 1
           if p[1] == ":" :
             self.stats.status(2)
-            trace.logErreur(self.dateur, p)
+            trace.logErreur(self.dateur, p, self.rep)
           elif p == "Chauffe" :
             self.stats.status(1)
           else :
@@ -375,7 +381,7 @@ class woodie_legacy(Thread):
     def logMessage(self, p):
         if self.lastEvent != p :
           self.lastEvent = p
-          trace.logErreur(self.dateur, p)
+          trace.logErreur(self.dateur, p, self.rep)
 
 
 if __name__ == '__main__':

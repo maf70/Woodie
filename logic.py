@@ -17,13 +17,25 @@ class dateur(Thread):
         self.date = ""
         self.time = ""
         self.newDate = ""
+        self.newMonth = ""
+        self.newYear = ""
 
     def run(self):
+        tt0_prev = 0
+        tt1_prev = 0
         tt2_prev = 0
         while self.dont_stop == 1 :
           dt = datetime.now()
           tt=dt.timetuple()
 
+          if tt0_prev != tt[0]:
+            self.newYear = 1
+            tt0_prev = tt[0]
+            self.Year   = dt.strftime("%Y")
+          if tt1_prev != tt[1]:
+            self.newMonth = 1
+            tt1_prev = tt[1]
+            self.YearMonth   = dt.strftime("%Y-%m")
           if tt2_prev != tt[2]:
             self.dateAffiche = dt.strftime("%m/%d")
             self.date        = dt.strftime("%Y-%m-%d")
@@ -37,6 +49,18 @@ class dateur(Thread):
     def etat( self, s ):
         self.dont_stop = s
 
+    def newYearF(self):
+	if self.newYear == 1:
+          self.newYear = 0
+          return 1
+        return 0
+
+    def newMonthF(self):
+	if self.newMonth == 1:
+          self.newMonth = 0
+          return 1
+        return 0
+
     def newDateF(self):
 	if self.newDate == 1:
           self.newDate = 0
@@ -46,8 +70,14 @@ class dateur(Thread):
     def affiche(self):
         return self.dateAffiche+" "+self.timeAffiche
 
-    def log(self):
+    def log_date(self):
+        return self.date
+
+    def log_time(self):
         return self.time
+
+    def log_datetime(self):
+        return self.date+"_"+self.time
 
 class stats(Thread):
 
