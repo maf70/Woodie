@@ -65,17 +65,17 @@ class Afficheur():
           for el in self.devices_list :
             if el[0].modif != 0 :
               el[0].modif = 0
-              ch = el[0].affiche()
-              l = el[3] - len(ch)
+              ch = el[1]()
+              l = el[4] - len(ch)
               if l >= 0   : txt=ch+" "*l
-              elif l < 0  : txt="#"*el[3]
+              elif l < 0  : txt="#"*el[4]
               i = 0
               while i < len(txt):
-                self.shadow[el[2]][el[1]+i] = txt[i]
+                self.shadow[el[3]][el[2]+i] = txt[i]
                 i += 1
               if self.etat > 1 :
                 try:
-                  self.lcd.lcd_display_string_pos(txt,el[2]+1,el[1])
+                  self.lcd.lcd_display_string_pos(txt,el[3]+1,el[2])
                 except :
                   self.etat = 1
 

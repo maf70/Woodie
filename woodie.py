@@ -80,25 +80,25 @@ class woodie_legacy(Thread):
         self.poussoirHalt = hw.Entree( reglages.p1,200)
 
         self.ecran    = hw.Afficheur( 20, 4, [ "T   Ct", "", "", "" ], [
-          # [ object , colonne , ligne, longueur ],
-          [ self.dateur  , 9, 0, 11 ],
-          [ self.ventilo , 14, 3, 1 ],
-          [ self.moteur  , 15, 3, 1 ],
-          [ self.inverse , 16, 3, 1 ],
-          # [ self.reserve , 3, 0, 1 ],
-          [ self.capteurVis , 4, 1, 5 ],
-          [ self.capteurTremie , 4, 2, 5 ],
-#          [ self.ctrlMoteur , 7, 2, 2],
-          [ self.t_eau , 0, 1, 3 ],
-          [ self.t_secu , 0, 2, 3 ],
-          [ self.d_secteur , 18, 3, 1 ],
-          [ self.d_secuMeca , 19, 3, 1 ],
-          [ self.poussoirReprise, 12, 3, 1 ],
-          [ self.poussoirHalt, 11, 3, 1 ],
-          [ self.poussoirWifi, 10, 3, 1 ],
-          [ self , 9, 1, 11 ],
-          [ self.stats , 9, 2, 11 ],
-          [ self.sondeK, 0, 3, 4 ]
+          # [ object, display fct, colonne, ligne, longueur ],
+          [ self.dateur           , self.dateur.affiche          , 9  , 0 , 11 ],
+          [ self.ventilo          , self.ventilo.affiche         , 14 , 3 , 1  ],
+          [ self.moteur           , self.moteur.affiche          , 15 , 3 , 1  ],
+          [ self.inverse          , self.inverse.affiche         , 16 , 3 , 1  ],
+          # [ self.reserve        , self.reserve.affiche         , 3  , 0 , 1  ],
+          [ self.capteurVis       , self.capteurVis.affiche      , 4  , 1 , 5  ],
+          [ self.capteurTremie    , self.capteurTremie.affiche   , 4  , 2 , 5  ],
+#          [ self.ctrlMoteur      , self.ctrlMoteur.affiche      , 7  , 2 , 2  ],
+          [ self.t_eau            , self.t_eau.affiche           , 0  , 1 , 3  ],
+          [ self.t_secu           , self.t_secu.affiche          , 0  , 2 , 3  ],
+          [ self.d_secteur        , self.d_secteur.affiche       , 18 , 3 , 1  ],
+          [ self.d_secuMeca       , self.d_secuMeca.affiche      , 19 , 3 , 1  ],
+          [ self.poussoirReprise  , self.poussoirReprise.affiche , 12 , 3 , 1  ],
+          [ self.poussoirHalt     , self.poussoirHalt.affiche    , 11 , 3 , 1  ],
+          [ self.poussoirWifi     , self.poussoirWifi.affiche    , 10 , 3 , 1  ],
+          [ self                  , self.affiche                 , 9  , 1 , 11 ],
+          [ self.stats            , self.stats.affiche           , 9  , 2 , 11 ],
+          [ self.sondeK           , self.sondeK.affiche          , 0  , 3 , 4  ]
           ] )
 
         self.i2cManager = hw.I2cManager( [ [self.ecran, 0.5 ] ] )
