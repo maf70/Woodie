@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import time
 import sys
+import os
 
 import RPi.GPIO as GPIO
 import smbus
@@ -417,6 +418,12 @@ class I2cManager(Thread):
           for el in self.devices :
             el[0].go()
             time.sleep(el[1])
+          try :
+            f = open("/mnt/data/info_i2c.txt"  "r")
+            f.close
+          except IOError :
+            os.system("i2cdetect -y 1 > /mnt/data/info_i2c.txt")
+            time.sleep(0.1)
 
     def etat( self, s ):
         self.dont_stop = s
