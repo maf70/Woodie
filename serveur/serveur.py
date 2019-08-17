@@ -25,6 +25,7 @@ log_nbCol = 3
 log_check = 'T'
 lcd = [ [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ],
         [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ]  ]
+source = ''
 
 app                                         = Flask(__name__)
 app.config['DEBUG']                         = False
@@ -70,7 +71,7 @@ class graphe :
 
 def configure_logger():
     logging.basicConfig(level=config.log_level, format=config.log_format)
-    handler = logging.handlers.RotatingFileHandler(config.log_name, maxBytes=config.log_max_size, backupCount=config.log_backup_count)
+    handler = logging.handlers.RotatingFileHandler(source.rep+config.log_name, maxBytes=config.log_max_size, backupCount=config.log_backup_count)
     handler.setLevel(config.log_level)
     formatter = logging.Formatter(config.log_format)
     handler.setFormatter(formatter)
@@ -121,23 +122,24 @@ def isfloat(x):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global redemarrage
+    global source
     try:
         if request.method == 'GET':
-          logs = fnmatch.filter(os.listdir(config.woodie_log_directory), '*.log')
+          logs = fnmatch.filter(os.listdir(source.rep), '*.log')
           logs.sort(reverse=True)
-          errs = fnmatch.filter(os.listdir(config.woodie_log_directory), '*.err')
+          errs = fnmatch.filter(os.listdir(source.rep), '*.err')
           errs.sort(reverse=True)
           list = []
           for f in errs :
             sublist = []
-            with open(config.woodie_log_directory+f, "r") as lines:
+            with open(source.rep+f, "r") as lines:
               for line in lines :
                 sublist.append(line)
             sublist.reverse()
             sublist.insert(0,f.split('.')[0])
             list.append(sublist)
 
-          fs_info = os.statvfs(config.woodie_log_directory)
+          fs_info = os.statvfs(source.rep)
           fs = str((fs_info.f_bsize * fs_info.f_bfree) / (1024*1024)) + " Mo"
 
           return render_template('index.html', titre=titre, fs=fs, logs=logs, errs=list)
@@ -171,7 +173,7 @@ def graph():
         jour = log_file.split('.')[0]
         list = []
         try :
-          lines = open(config.woodie_log_directory+jour+".err", "r")
+          lines = open(source.rep+jour+".err", "r")
           for line in lines :
             list.append(line)
           list.reverse()
@@ -180,7 +182,7 @@ def graph():
           lines = []
 
         for g in gl:
-          g = get_data(config.woodie_log_directory+log_file, g)
+          g = get_data(source.rep+log_file, g)
           g.x.label = jour
         return render_template('graph.html', titre=titre, dt=datetime.now(), log_file=jour, errs=list, gl=gl )
 
@@ -193,12 +195,12 @@ def graph():
 def conf():
     try:
         if request.method == 'GET':
-            jsonFile = open(config.woodie_config, "r")
+            jsonFile = open(config.config_file, "r")
             conf = json.load(jsonFile, object_pairs_hook=OrderedDict)
             jsonFile.close()
             return render_template('conf.html', titre=titre, conf=conf)
         else:
-            jsonFile = open(config.woodie_config, "r")
+            jsonFile = open(config.config_file, "r")
             conf = json.load(jsonFile, object_pairs_hook=OrderedDict)
             jsonFile.close()
             for parameter in conf:
@@ -209,7 +211,7 @@ def conf():
                         conf[parameter]['valeur'] = float(request.form[parameter])
                     else:
                         conf[parameter]['valeur'] = request.form[parameter]
-            jsonFile = open(config.woodie_config, "w+")
+            jsonFile = open(config.config_file, "w+")
             jsonFile.write(json.dumps(conf, ensure_ascii=False, indent=4, sort_keys=False).encode('utf8'))
             jsonFile.close()
             return redirect(url_for('conf'))
@@ -233,20 +235,21 @@ class Serveur(Thread):
         while self.dont_stop == 1 :
           time.sleep(1)
 
-    def majSource( self, source ):
+    def majSource( self, s ):
         global gl
         global titre
         global log_nbCol
         global log_check
         global lcd
+        global source
 
-        self.source = source
+        source = s
         gl = source.graphList
         titre = source.label
         log_nbCol = source.trace.nbElem
         log_check = source.trace.devices_list[0][1][0]
         lcd = source.ecran.shadow
-        config.woodie_config = config.woodie_base_path+source.fichier_param
+        config.config_file = config.base_path+source.fichier_param
 
     def etat( self, s ):
         self.dont_stop = s
