@@ -18,11 +18,34 @@
         <h2>Logs :</h2>
         <form action="{{ url_for('graph') }}" method="post">
           <h3>Espace disponible = {{ fs }}</h3>
-          <input class="send_form" type="submit" value="Afficher">
-          <br>
-          {% for log in logs %}
-            <input type="radio" name="log_radio" value="{{ log }}">{{ log }}<br>
-          {% endfor %}
+          {% if logs_tout|length != 0 %}
+            <input class="send_form" type="submit" value="Afficher graphe total">
+            <br>
+            {% for log in logs_tout %}
+              <input type="radio" name="log_radio" value="{{ log }}">{{ log }}<br>
+            {% endfor %}
+          {% endif %}
+          {% if logs_an|length != 0 %}
+            <input class="send_form" type="submit" value="Afficher graphe annee">
+            <br>
+            {% for log in logs_an %}
+              <input type="radio" name="log_radio" value="{{ log }}">{{ log }}<br>
+            {% endfor %}
+          {% endif %}
+          {% if logs_mois|length != 0 %}
+            <input class="send_form" type="submit" value="Afficher graphe mois">
+            <br>
+            {% for log in logs_mois %}
+              <input type="radio" name="log_radio" value="{{ log }}">{{ log }}<br>
+            {% endfor %}
+          {% endif %}
+          {% if logs_jour|length != 0 %}
+            <input class="send_form" type="submit" value="Afficher graphe jour">
+            <br>
+            {% for log in logs_jour %}
+              <input type="radio" name="log_radio" value="{{ log }}">{{ log }}<br>
+            {% endfor %}
+          {% endif %}
         </form>
         <h2>Evenement(s) :</h2>
           {% for f in errs %}

@@ -21,7 +21,6 @@ from threading import Thread
 redemarrage = 0
 gl = []
 titre = "Test serveur"
-log_nbCol = 3
 log_check = 'T'
 lcd = [ [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ],
         [ ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' ]  ]
@@ -59,14 +58,14 @@ class graphe :
 
     """Classe graphe : Description complete d'un graphe"""
 
-    def __init__(self, titre, x, y1, y2, courbes):
+    def __init__(self, titre, x, y1, y2, courbes, type="D", cb=''):
         self.titre = titre
         self.x = x
         self.y1 = y1
         self.y2 = y2
         self.courbes = courbes
-
-
+        self.type = type
+        self.cb = cb
 
 
 def configure_logger():
@@ -81,21 +80,22 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_data(log_file, gr):
-    global log_nbCol
     global log_check
     with open(log_file, "r") as lines:
         gr.x.pts = []
         for c in gr.courbes:
           c.pts = []
+        nb_champs = 0
         for line in lines:
             data = line.split(';')
             if line[0] != log_check :
-                if len(data) >= log_nbCol:
+                if len(data) == nb_champs:
                     gr.x.pts.append(data[gr.x.col])
                     for c in gr.courbes:
 #                      c.pts.append(int(data[c.col])+c.offset)
                       c.pts.append(data[c.col])
             else:
+              nb_champs = len(data)
               for c in gr.courbes:
                 c.col = data.index(c.colNom)
               gr.x.col = data.index(gr.x.colNom)
@@ -125,8 +125,14 @@ def index():
     global source
     try:
         if request.method == 'GET':
-          logs = fnmatch.filter(os.listdir(source.rep), '*.log')
-          logs.sort(reverse=True)
+          logs_jour = fnmatch.filter(os.listdir(source.rep), '2???-??-??.log')
+          logs_jour.sort(reverse=True)
+          logs_mois = fnmatch.filter(os.listdir(source.rep), '2???-??.log')
+          logs_mois.sort(reverse=True)
+          logs_an = fnmatch.filter(os.listdir(source.rep), '2???.log')
+          logs_an.sort(reverse=True)
+          logs_tout = fnmatch.filter(os.listdir(source.rep), 'all.log')
+          logs_tout.sort(reverse=True)
           errs = fnmatch.filter(os.listdir(source.rep), '*.err')
           errs.sort(reverse=True)
           list = []
@@ -142,7 +148,7 @@ def index():
           fs_info = os.statvfs(source.rep)
           fs = str((fs_info.f_bsize * fs_info.f_bfree) / (1024*1024)) + " Mo"
 
-          return render_template('index.html', titre=titre, fs=fs, logs=logs, errs=list)
+          return render_template('index.html', titre=titre, fs=fs, logs_jour=logs_jour, logs_mois=logs_mois, logs_an=logs_an, logs_tout=logs_tout, errs=list)
 
         else:
           redemarrage = 1
@@ -170,10 +176,23 @@ def graph():
     global gl
     try:
         log_file = request.form['log_radio']
-        jour = log_file.split('.')[0]
+        log_file_base = log_file.split('.')[0]
+        log_file_type = log_file_base.count('-')
+        if log_file_type == 2:
+          log_file_type = 'D'
+        elif log_file_type == 1:
+          log_file_type = 'M'
+        elif log_file_type == 0:
+          if log_file_base.count('2') == 1:
+            log_file_type = 'Y'
+          else:
+            log_file_type = 'A'
+        else:
+          log_file_type = 'U'
+
         list = []
         try :
-          lines = open(source.rep+jour+".err", "r")
+          lines = open(source.rep+log_file_base+".err", "r")
           for line in lines :
             list.append(line)
           list.reverse()
@@ -181,10 +200,16 @@ def graph():
         except :
           lines = []
 
+        glist = []
         for g in gl:
-          g = get_data(source.rep+log_file, g)
-          g.x.label = jour
-        return render_template('graph.html', titre=titre, dt=datetime.now(), log_file=jour, errs=list, gl=gl )
+          if g.type == log_file_type:
+            data_source = source.rep+log_file
+            if g.cb != '':
+              data_source = g.cb(source.rep+log_file)
+            g = get_data(data_source, g)
+            g.x.label = log_file_base
+            glist.append(g)
+        return render_template('graph.html', titre=titre, dt=datetime.now(), log_file=log_file_base, errs=list, gl=glist )
 
     except Exception as e:
         LOGGER.error("error in graph(): "+str(e))
@@ -238,16 +263,12 @@ class Serveur(Thread):
     def majSource( self, s ):
         global gl
         global titre
-        global log_nbCol
-        global log_check
         global lcd
         global source
 
         source = s
         gl = source.graphList
         titre = source.label
-        log_nbCol = source.trace.nbElem
-        log_check = source.trace.devices_list[0][1][0]
         lcd = source.ecran.shadow
         config.config_file = config.base_path+source.fichier_param
 
