@@ -19,6 +19,7 @@ class Traceur(Thread):
         self.periode = periode
         self.freq = freq
         self.rep = repertoire
+        self.flush_timer = 0
         self.dont_stop = 1
         self.active = 1
         self.activeReq = 1
@@ -31,6 +32,13 @@ class Traceur(Thread):
 
         while self.dont_stop == 1 :
           compteur -= 1
+          self.flush_timer += 1
+          if self.flush_timer >= 7200 :
+            # Ensure that file is updated at list every 2 hours
+            if f :
+              f.flush()
+              self.flush_timer = 0
+
           if compteur == 0 :
 
             if self.active == 1 or self.activeReq == 1:
@@ -76,6 +84,10 @@ class Traceur(Thread):
 
     def etat( self, s ):
         self.dont_stop = s
+
+    def sauvegarde( self ):
+        # This function provide a way to have up to date data for graphs
+        self.flush_timer = 7200
 
 def logErreur(dt, erreur, rep="/mnt/data/LOGS/") :
     f=open(rep+dt.date+".err","a")
